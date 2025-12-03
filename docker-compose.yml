@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hakuna-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hakuna}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hakuna_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-hakuna_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hakuna} -d ${POSTGRES_DB:-hakuna_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hakuna-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hakuna-backend
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgres://${POSTGRES_USER:-hakuna}:${POSTGRES_PASSWORD:-hakuna_secret}@postgres:5432/${POSTGRES_DB:-hakuna_db}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      CORS_ORIGIN: http://localhost:80
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hakuna-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3001
+        VITE_WS_URL: ws://localhost:3001
+    container_name: hakuna-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - hakuna-network
+
+volumes:
+  postgres_data:
+
+networks:
+  hakuna-network:
+    driver: bridge
+

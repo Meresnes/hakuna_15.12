@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --flame-red: #ff4136;
+  --flame-yellow: #ffdc00;
+  --flame-white: #fffef0;
+  --flame-orange: #ff851b;
+  --night-dark: #0a0a0f;
+  --night-medium: #151520;
+  --night-light: #1f1f2e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--night-dark);
+  color: white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100%;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--night-medium);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--night-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--flame-orange);
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-gradient-flame {
+    background: linear-gradient(135deg, var(--flame-yellow), var(--flame-orange), var(--flame-red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-flame {
+    box-shadow: 
+      0 0 20px var(--flame-orange),
+      0 0 40px var(--flame-red),
+      0 0 60px var(--flame-yellow);
+  }
+
+  .bg-gradient-radial {
+    background: radial-gradient(circle at center, var(--night-light), var(--night-dark));
+  }
+}
+
+/* Font faces fallbacks */
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-great-vibes {
+  font-family: 'Great Vibes', cursive;
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
