@@ -27,13 +27,16 @@ const httpServer = createServer(app);
 
 // Environment variables
 const PORT = parseInt(process.env.PORT ?? '3001', 10);
-const CORS_ORIGIN = process.env.CORS_ORIGIN ?? 'http://localhost:5173';
+const CORS_ORIGIN_RAW = process.env.CORS_ORIGIN ?? 'http://localhost:5173,http://localhost:5174';
 const NODE_ENV = process.env.NODE_ENV ?? 'development';
+
+// Parse CORS origins (support comma-separated list)
+const CORS_ORIGINS = CORS_ORIGIN_RAW.split(',').map(s => s.trim());
 
 // Socket.IO setup
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: CORS_ORIGIN,
+    origin: CORS_ORIGINS,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -49,7 +52,7 @@ app.use(
 );
 app.use(
   cors({
-    origin: CORS_ORIGIN,
+    origin: CORS_ORIGINS,
     credentials: true,
   })
 );
@@ -108,7 +111,7 @@ async function startServer(): Promise<void> {
       console.info(`🚀 Server running on http://localhost:${PORT}`);
       console.info(`📡 Socket.IO listening on /live namespace`);
       console.info(`🌍 Environment: ${NODE_ENV}`);
-      console.info(`🔗 CORS origin: ${CORS_ORIGIN}`);
+      console.info(`🔗 CORS origins: ${CORS_ORIGINS.join(', ')}`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);

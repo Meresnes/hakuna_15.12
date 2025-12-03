@@ -26,7 +26,12 @@ interface UseSocketReturn {
   emitTestVote: (name: string, choice: number) => void;
 }
 
-const SOCKET_URL = import.meta.env.VITE_WS_URL ?? '';
+const getSocketUrl = (): string => {
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
+  }
+  return window.location.origin;
+};
 
 export function useSocket(options: UseSocketOptions): UseSocketReturn {
   const { role, onNewVote, onUpdateCounts, onSyncState } = options;
@@ -34,6 +39,29 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [flames, setFlames] = useState<Flame[]>([]);
+
+  // Store callbacks in refs to avoid reconnection on callback change
+  const onNewVoteRef = useRef(onNewVote);
+  const onUpdateCountsRef = useRef(onUpdateCounts);
+  const onSyncStateRef = useRef(onSyncState);
+  const roleRef = useRef(role);
+
+  // Update refs when callbacks change (without triggering reconnection)
+  useEffect(() => {
+    onNewVoteRef.current = onNewVote;
+  }, [onNewVote]);
+
+  useEffect(() => {
+    onUpdateCountsRef.current = onUpdateCounts;
+  }, [onUpdateCounts]);
+
+  useEffect(() => {
+    onSyncStateRef.current = onSyncState;
+  }, [onSyncState]);
+
+  useEffect(() => {
+    roleRef.current = role;
+  }, [role]);
 
   // Remove flames after animation (4 seconds)
   useEffect(() => {
@@ -59,13 +87,17 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
     setFlames(prev => [...prev, flame]);
   }, []);
 
+  // Socket connection - only reconnect when role changes
   useEffect(() => {
-    // Connect to Socket.IO
-    const socket = io(SOCKET_URL + '/live', {
+    const socketUrl = getSocketUrl();
+    console.info('Connecting to Socket.IO:', socketUrl + '/live');
+    
+    const socket = io(socketUrl + '/live', {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionAttempts: 10,
+      path: '/socket.io',
     });
 
     socketRef.current = socket;
@@ -75,7 +107,7 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
       setIsConnected(true);
       
       // Send handshake with role
-      socket.emit('handshake', { role });
+      socket.emit('handshake', { role: roleRef.current });
     });
 
     socket.on('disconnect', () => {
@@ -91,7 +123,7 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
     // Handle sync_state (initial state on connect)
     socket.on('sync_state', (data: { counts: Counts; total: number; last50: Vote[]; brightness: number }) => {
       console.info('Received sync_state:', data);
-      onSyncState?.(data);
+      onSyncStateRef.current?.(data);
     });
 
     // Handle new_vote event
@@ -99,24 +131,25 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
       console.info('Received new_vote:', vote);
       
       // Add flame animation for presenter
-      if (role === 'presenter') {
+      if (roleRef.current === 'presenter') {
         addFlame(vote);
       }
       
-      onNewVote?.(vote);
+      onNewVoteRef.current?.(vote);
     });
 
     // Handle update_counts event
     socket.on('update_counts', (data: { counts: Counts; total: number; brightness: number }) => {
       console.info('Received update_counts:', data);
-      onUpdateCounts?.(data);
+      onUpdateCountsRef.current?.(data);
     });
 
     return () => {
+      console.info('Disconnecting Socket.IO');
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [role, onNewVote, onUpdateCounts, onSyncState, addFlame]);
+  }, [addFlame]); // Only addFlame is stable (useCallback with empty deps)
 
   // Emit submit_choice event
   const emitSubmitChoice = useCallback((name: string, choice: number) => {
@@ -127,10 +160,10 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
 
   // Emit test vote (admin only)
   const emitTestVote = useCallback((name: string, choice: number) => {
-    if (socketRef.current?.connected && role === 'admin') {
+    if (socketRef.current?.connected && roleRef.current === 'admin') {
       socketRef.current.emit('test_vote', { name, choice });
     }
-  }, [role]);
+  }, []);
 
   return {
     socket: socketRef.current,
@@ -140,4 +173,3 @@ export function useSocket(options: UseSocketOptions): UseSocketReturn {
     emitTestVote,
   };
 }
-
