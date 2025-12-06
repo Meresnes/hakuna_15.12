@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT INTO settings (key, value) VALUES
     ('code', '8375'),
     ('target_count', '110'),
-    ('brightness_min', '0.2'),
+    ('brightness_min', '0.1'),
     ('brightness_max', '1.10')
 ON CONFLICT (key) DO NOTHING;
 

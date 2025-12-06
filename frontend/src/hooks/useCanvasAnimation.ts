@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback } from 'react';
+import { gsap } from 'gsap';
 import type { Flame } from './useSocket';
 
 interface UseCanvasAnimationOptions {
@@ -9,132 +10,240 @@ interface UseCanvasAnimationOptions {
 interface CanvasFlame extends Flame {
   y: number;
   progress: number;
+  scale: number;
+  opacity: number;
+  xOffset: number; // For horizontal drift
+  morphPhase: number; // For flame shape animation
+  gsapAnimation?: gsap.core.Timeline;
 }
 
-const ANIMATION_DURATION = 4000; // 4 seconds
+const ANIMATION_DURATION = 10000; // 6 seconds (slower animation)
 
 export function useCanvasAnimation({ flames }: UseCanvasAnimationOptions) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameRef = useRef<number>(0);
   const flamesRef = useRef<CanvasFlame[]>([]);
+  const timeRef = useRef(0);
 
   // Update flames reference when props change
   useEffect(() => {
-    const now = Date.now();
-    
     // Add new flames
     flames.forEach(flame => {
       const exists = flamesRef.current.some(f => f.id === flame.id);
       if (!exists) {
-        flamesRef.current.push({
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        
+        const canvasHeight = canvas.height;
+        const startY = canvasHeight + 50; // Start below screen
+        const endY = -100; // End above screen
+        
+        const newFlame: CanvasFlame = {
           ...flame,
-          y: 1, // Start at bottom (normalized)
+          y: startY,
           progress: 0,
+          scale: 1.6,
+          opacity: 1,
+          xOffset: 0,
+          morphPhase: Math.random() * Math.PI * 2, // Random starting phase for morphing
+        };
+
+        // Use GSAP for smooth animation
+        const tl = gsap.timeline({
+          onComplete: () => {
+            // Remove flame when animation completes
+            flamesRef.current = flamesRef.current.filter(f => f.id !== flame.id);
+          },
         });
+
+        // Animate Y position with smooth easing
+        tl.to(newFlame, {
+          y: endY,
+          duration: ANIMATION_DURATION / 1000,
+          ease: 'power2.out', // Smooth deceleration
+        });
+
+        // Animate scale (shrink as it rises)
+        tl.to(newFlame, {
+          scale: 0.5,
+          duration: ANIMATION_DURATION / 1000,
+          ease: 'power2.out',
+        }, 0); // Start at same time
+
+        // Animate opacity (fade out)
+        tl.to(newFlame, {
+          opacity: 0,
+          duration: ANIMATION_DURATION / 1000,
+          ease: 'power1.out',
+        }, 0);
+
+        // Add subtle horizontal drift for more natural movement
+        const driftAmount = (Math.random() - 0.5) * 40; // Random drift -20 to +20 pixels
+        tl.to(newFlame, {
+          xOffset: driftAmount,
+          duration: ANIMATION_DURATION / 1000,
+          ease: 'sine.inOut', // Smooth sine wave for natural drift
+        }, 0);
+
+        newFlame.gsapAnimation = tl;
+        flamesRef.current.push(newFlame);
       }
     });
 
-    // Remove old flames
+    // Clean up old flames
     flamesRef.current = flamesRef.current.filter(flame => {
-      const age = now - flame.startTime;
-      return age < ANIMATION_DURATION;
+      const age = Date.now() - flame.startTime;
+      return age < ANIMATION_DURATION + 1000; // Keep a bit longer for cleanup
     });
   }, [flames]);
 
-  // Draw flame on canvas
+  // Draw enhanced flame on canvas
   const drawFlame = useCallback((
     ctx: CanvasRenderingContext2D,
     flame: CanvasFlame,
     canvasWidth: number,
-    canvasHeight: number
+    canvasHeight: number,
+    time: number
   ) => {
-    const { x, progress, color, name } = flame;
+    const { x, color, name, scale, opacity, xOffset, morphPhase } = flame;
     
-    // Calculate position
-    const px = (x / 100) * canvasWidth;
-    const py = canvasHeight - (progress * canvasHeight * 1.2); // Rise above screen
+    // Calculate position with drift
+    const px = (x / 100) * canvasWidth + xOffset;
+    const py = flame.y;
     
-    // Calculate scale and opacity based on progress
-    const scale = 1 - progress * 0.5; // Shrink as it rises
-    const opacity = 1 - Math.pow(progress, 2); // Fade out
+    // Skip if off screen
+    if (py < -100 || py > canvasHeight + 100) return;
     
-    // Draw glow
-    const gradient = ctx.createRadialGradient(px, py, 0, px, py, 60 * scale);
-    gradient.addColorStop(0, `${color}${Math.floor(opacity * 255).toString(16).padStart(2, '0')}`);
-    gradient.addColorStop(0.5, `${color}${Math.floor(opacity * 128).toString(16).padStart(2, '0')}`);
-    gradient.addColorStop(1, 'transparent');
+    // Animated morphing phase for flame shape (creates flickering effect)
+    const morphSpeed = 0.003;
+    const currentMorph = morphPhase + time * morphSpeed;
+    const morphAmount = Math.sin(currentMorph) * 0.15; // 15% variation
     
+    // Enhanced glow effect (larger)
+    const glowRadius = 70 * scale;
+    const glowGradient = ctx.createRadialGradient(px, py, 0, px, py, glowRadius);
+    const glowOpacity = Math.floor(opacity * 180).toString(16).padStart(2, '0');
+    const glowMidOpacity = Math.floor(opacity * 100).toString(16).padStart(2, '0');
+    
+    glowGradient.addColorStop(0, `${color}${glowOpacity}`);
+    glowGradient.addColorStop(0.3, `${color}${glowMidOpacity}`);
+    glowGradient.addColorStop(0.6, `${color}40`);
+    glowGradient.addColorStop(1, 'transparent');
+    
+    // Draw outer glow
+    ctx.save();
+    ctx.globalAlpha = opacity * 0.6;
     ctx.beginPath();
-    ctx.fillStyle = gradient;
-    ctx.arc(px, py, 60 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = glowGradient;
+    ctx.arc(px, py, glowRadius, 0, Math.PI * 2);
     ctx.fill();
-
-    // Draw flame shape (from Thanks.tsx SVG path)
-    // SVG viewBox: 0 0 24 32, center at (12, 16)
+    ctx.restore();
+    
+    // Draw flame shape with morphing animation (larger)
     ctx.save();
     ctx.translate(px, py);
     
-    // Scale factor for flame size
-    const flameScale = scale * 1.2;
+    const flameScale = scale * 2.0; // Increased from 1.3 to 2.0
     ctx.scale(flameScale, flameScale);
     
-    // Flame body path - convert SVG coordinates to canvas (centered at origin)
-    // SVG: M 12 28 -> canvas: (0, 12) relative to center (12, 16)
+    // Apply subtle rotation for more dynamic look
+    const rotation = Math.sin(currentMorph * 0.5) * 0.1; // Small rotation
+    ctx.rotate(rotation);
+    
+    // Flame body path with morphing
     ctx.beginPath();
-    ctx.moveTo(0, 12); // (12, 28) - (12, 16) = (0, 12)
+    const morphLeft = 1 + morphAmount;
+    const morphRight = 1 - morphAmount;
     
-    // Left side curves (convert from SVG absolute to canvas relative)
-    // C 8 26 6 22 6 18 -> relative to center: (-4, 10) (-6, 6) (-6, 2)
-    ctx.bezierCurveTo(-4, 10, -6, 6, -6, 2);
-    // C 6 14 8 10 10 6 -> relative: (-6, -2) (-4, -6) (-2, -10)
-    ctx.bezierCurveTo(-6, -2, -4, -6, -2, -10);
-    // C 11 4 12 2 12 2 -> relative: (-1, -12) (0, -14) (0, -14)
-    ctx.bezierCurveTo(-1, -12, 0, -14, 0, -14);
+    ctx.moveTo(0, 12);
     
-    // Right side curves (mirror)
-    // C 12 2 13 4 14 6 -> relative: (0, -14) (1, -12) (2, -10)
-    ctx.bezierCurveTo(0, -14, 1, -12, 2, -10);
-    // C 16 10 18 14 18 18 -> relative: (4, -6) (6, -2) (6, 2)
-    ctx.bezierCurveTo(4, -6, 6, -2, 6, 2);
-    // C 18 22 16 26 12 28 -> relative: (6, 6) (4, 10) (0, 12)
-    ctx.bezierCurveTo(6, 6, 4, 10, 0, 12);
+    // Left side with morphing
+    ctx.bezierCurveTo(
+      -4 * morphLeft, 10, 
+      -6 * morphLeft, 6, 
+      -6 * morphLeft, 2
+    );
+    ctx.bezierCurveTo(
+      -6 * morphLeft, -2, 
+      -4 * morphLeft, -6, 
+      -2 * morphLeft, -10
+    );
+    ctx.bezierCurveTo(
+      -1 * morphLeft, -12, 
+      0, -14, 
+      0, -14
+    );
+    
+    // Right side with morphing
+    ctx.bezierCurveTo(
+      0, -14, 
+      1 * morphRight, -12, 
+      2 * morphRight, -10
+    );
+    ctx.bezierCurveTo(
+      4 * morphRight, -6, 
+      6 * morphRight, -2, 
+      6 * morphRight, 2
+    );
+    ctx.bezierCurveTo(
+      6 * morphRight, 6, 
+      4 * morphRight, 10, 
+      0, 12
+    );
     
     ctx.closePath();
     
-    // Radial gradient matching Thanks.tsx (cx="35%" cy="70%" = approximately (0, -2) in our coordinate system)
+    // Enhanced radial gradient (larger)
     const gradientCenterY = -2;
-    const gradientRadius = 12;
+    const gradientRadius = 18; // Increased from 14
     const flameGradient = ctx.createRadialGradient(0, gradientCenterY, 0, 0, gradientCenterY, gradientRadius);
     flameGradient.addColorStop(0, '#fffef0');
-    flameGradient.addColorStop(0.4, '#ffdc00');
-    flameGradient.addColorStop(0.8, color);
+    flameGradient.addColorStop(0.2, '#ffdc00');
+    flameGradient.addColorStop(0.5, color);
+    flameGradient.addColorStop(0.8, `${color}CC`);
     flameGradient.addColorStop(1, `${color}00`);
     
     ctx.fillStyle = flameGradient;
     ctx.globalAlpha = opacity;
     ctx.fill();
     
-    // Inner white ellipse (core of flame) - ellipse at (12, 14) in SVG = (0, -2) in canvas
+    // Inner white core with pulsing effect
+    const corePulse = 1 + Math.sin(currentMorph * 2) * 0.1;
     ctx.beginPath();
-    ctx.ellipse(0, gradientCenterY, 3, 8, 0, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255, 254, 240, ${opacity * 0.8})`;
+    ctx.ellipse(0, gradientCenterY, 3 * corePulse, 8 * corePulse, 0, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 254, 240, ${opacity * 0.9})`;
+    ctx.fill();
+    
+    // Add bright center highlight
+    ctx.beginPath();
+    ctx.ellipse(0, gradientCenterY - 2, 2 * corePulse, 4 * corePulse, 0, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.6})`;
     ctx.fill();
     
     ctx.restore();
 
-    // Draw name text
+    // Draw name text with enhanced styling
     if (opacity > 0.3) {
       ctx.save();
-      const fontSize = 28 * scale;
+      const fontSize = 26 * scale;
       ctx.font = `bold ${fontSize}px Inter, sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+      
+      // Enhanced text shadow/glow
       ctx.shadowColor = color;
-      ctx.shadowBlur = 15;
-      ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.5})`;
-      ctx.lineWidth = 2;
-      ctx.strokeText(name, px, py + 60 * scale);
-      ctx.fillText(name, px, py + 60 * scale);
+      ctx.shadowBlur = 20 * scale;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      // Text outline for better readability
+      ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.7})`;
+      ctx.lineWidth = 3 * scale;
+      ctx.strokeText(name, px, py + 90 * scale); // Adjusted for larger flame
+      
+      // Main text
+      ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+      ctx.fillText(name, px, py + 90 * scale); // Adjusted for larger flame
+      
       ctx.restore();
     }
   }, []);
@@ -147,7 +256,7 @@ export function useCanvasAnimation({ flames }: UseCanvasAnimationOptions) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const now = Date.now();
+    timeRef.current += 16; // Approximate frame time (60fps)
     const { width, height } = canvas;
 
     // Clear canvas
@@ -155,11 +264,12 @@ export function useCanvasAnimation({ flames }: UseCanvasAnimationOptions) {
 
     // Update and draw flames
     flamesRef.current.forEach(flame => {
-      const age = now - flame.startTime;
+      // Calculate progress for cleanup
+      const age = Date.now() - flame.startTime;
       flame.progress = Math.min(age / ANIMATION_DURATION, 1);
       
-      if (flame.progress < 1) {
-        drawFlame(ctx, flame, width, height);
+      if (flame.progress < 1.1) { // Draw slightly beyond completion for smooth fade
+        drawFlame(ctx, flame, width, height, timeRef.current);
       }
     });
 
@@ -174,6 +284,12 @@ export function useCanvasAnimation({ flames }: UseCanvasAnimationOptions) {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      // Clean up GSAP animations
+      flamesRef.current.forEach(flame => {
+        if (flame.gsapAnimation) {
+          flame.gsapAnimation.kill();
+        }
+      });
     };
   }, [animate]);
 
@@ -195,4 +311,3 @@ export function useCanvasAnimation({ flames }: UseCanvasAnimationOptions) {
 
   return { canvasRef };
 }
-

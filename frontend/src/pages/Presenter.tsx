@@ -33,9 +33,9 @@ function Presenter() {
   // Calculate brightness based on total votes
   const brightness = Math.min(
     Math.max(
-      state.brightnessRange.min + 
+      state.brightnessRange.min - 0.1 +
         (state.total / state.target) * (state.brightnessRange.max - state.brightnessRange.min),
-      state.brightnessRange.min
+      state.brightnessRange.min - 0.5
     ),
     state.brightnessRange.max
   );
@@ -83,30 +83,6 @@ function Presenter() {
       {/* Stats overlay */}
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
         <div className="max-w-4xl mx-auto">
-          {/* Progress bar */}
-          {/*<motion.div */}
-          {/*  className="mb-6"*/}
-          {/*  initial={{ opacity: 0, y: 20 }}*/}
-          {/*  animate={{ opacity: 1, y: 0 }}*/}
-          {/*  transition={{ duration: 0.6 }}*/}
-          {/*>*/}
-          {/*  <div className="flex justify-between text-sm text-gray-300 mb-2">*/}
-          {/*    <span className="font-medium">Прогресс</span>*/}
-          {/*    <span className="font-semibold text-white">*/}
-          {/*      {state.total} / {state.target}*/}
-          {/*    </span>*/}
-          {/*  </div>*/}
-          {/*  <div className="h-3 bg-night-light/50 rounded-full overflow-hidden backdrop-blur-sm">*/}
-          {/*    <motion.div */}
-          {/*      className="h-full bg-gradient-to-r from-flame-red via-flame-orange to-flame-yellow"*/}
-          {/*      initial={{ width: 0 }}*/}
-          {/*      animate={{ */}
-          {/*        width: `${Math.min((state.total / state.target) * 100, 100)}%` */}
-          {/*      }}*/}
-          {/*      transition={{ duration: 0.5, ease: 'easeOut' }}*/}
-          {/*    />*/}
-          {/*  </div>*/}
-          {/*</motion.div>*/}
 
           {/* Counts */}
           <div className="grid grid-cols-4 gap-4">

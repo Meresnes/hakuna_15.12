@@ -122,7 +122,7 @@ async function getCurrentState(): Promise<SyncStatePayload> {
   ]);
 
   const target = parseInt(settings['target_count'] ?? '110', 10);
-  const brightnessMin = parseFloat(settings['brightness_min'] ?? '0.2');
+  const brightnessMin = parseFloat(settings['brightness_min'] ?? '0.1');
   const brightnessMax = parseFloat(settings['brightness_max'] ?? '1.10');
   const brightness = calculateBrightness(total, target, brightnessMin, brightnessMax);
 
@@ -167,7 +167,7 @@ async function processVote(
     ]);
 
     const target = parseInt(settings['target_count'] ?? '110', 10);
-    const brightnessMin = parseFloat(settings['brightness_min'] ?? '0.2');
+    const brightnessMin = parseFloat(settings['brightness_min'] ?? '0.1');
     const brightnessMax = parseFloat(settings['brightness_max'] ?? '1.10');
     const brightness = calculateBrightness(total, target, brightnessMin, brightnessMax);
 
