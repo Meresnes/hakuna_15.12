@@ -57,7 +57,7 @@ function Enter() {
         <div className="text-center mb-10">
           <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-gradient-flame mb-3">Хакуна 2025
           </h1>
-          <p className="font-great-vibes text-2xl text-flame-yellow opacity-80">
+          <p className="font-great-vibes text-2xl text-flame-yellow opacity-90">
             Добавь света в мир
           </p>
         </div>

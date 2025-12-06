@@ -23,32 +23,28 @@ function Thanks() {
             ease: 'easeInOut',
           }}
         >
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <defs>
-              <radialGradient id="flameGradient" cx="50%" cy="70%" r="50%">
-                <stop offset="0%" stopColor="#fffef0" />
-                <stop offset="30%" stopColor="#ffdc00" />
-                <stop offset="60%" stopColor="#ff851b" />
-                <stop offset="100%" stopColor="#ff4136" />
-              </radialGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <ellipse
-              cx="50"
-              cy="60"
-              rx="25"
-              ry="35"
-              fill="url(#flameGradient)"
-              filter="url(#glow)"
-            />
-            <ellipse cx="50" cy="50" rx="15" ry="25" fill="#fffef0" opacity="0.7" />
-          </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32">
+                <defs>
+                    <radialGradient id="iconFlame" cx="35%" cy="70%" r="60%">
+                        <stop offset="0%" stop-color="#fffef0"/>
+                        <stop offset="40%" stop-color="#ffdc00"/>
+                        <stop offset="80%" stop-color="#ff851b"/>
+                        <stop offset="100%" stop-color="#ff4136"/>
+                    </radialGradient>
+                </defs>
+
+                <path d="M 12 28
+           C 8 26 6 22 6 18
+           C 6 14 8 10 10 6
+           C 11 4 12 2 12 2
+           C 12 2 13 4 14 6
+           C 16 10 18 14 18 18
+           C 18 22 16 26 12 28 Z"
+                      fill="url(#iconFlame)"/>
+
+                <ellipse cx="12" cy="14" rx="3" ry="8" fill="#fffef0" opacity="0.8"/>
+            </svg>
+
         </motion.div>
 
         {/* Thank you message */}
