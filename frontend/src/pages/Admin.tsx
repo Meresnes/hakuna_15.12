@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useApp, CHOICE_COLORS, type Vote } from '../context/AppContext';
 import { useSocket } from '../hooks/useSocket';
@@ -10,8 +10,22 @@ function Admin() {
   const [last50, setLast50] = useState<Vote[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Presenter control state
+  const [presenterMode, setPresenterMode] = useState<string>('idle');
+  const [revealAnswers, setRevealAnswers] = useState(false);
 
-  const { emitTestVote, isConnected } = useSocket({ role: 'admin' });
+  const { socket, emitTestVote, isConnected } = useSocket({ role: 'admin' });
+
+  // Send presenter mode command via socket
+  const sendPresenterMode = useCallback((mode: string, reveal: boolean) => {
+    if (socket?.connected) {
+      socket.emit('set_presenter_mode', { mode, revealAnswers: reveal });
+      setPresenterMode(mode);
+      setRevealAnswers(reveal);
+      console.info(`[Admin] Sent presenter_mode: ${mode}, revealAnswers: ${reveal}`);
+    }
+  }, [socket]);
 
   // Check if already authenticated (stored in session)
   useEffect(() => {
@@ -204,6 +218,55 @@ function Admin() {
               🗑️ Сброс БД
             </button>
           </div>
+        </div>
+
+        {/* Presenter Control */}
+        <div className="bg-night-medium rounded-xl p-4 md:p-6 mb-8">
+          <h2 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <span className="text-gold">📺</span> Управление презентером
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => sendPresenterMode('questions', false)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                presenterMode === 'questions' && !revealAnswers
+                  ? 'bg-gold text-night-dark ring-2 ring-gold-accent'
+                  : 'bg-night-light text-white hover:bg-night-dark'
+              }`}
+            >
+              📝 Показать вопросы
+            </button>
+            <button
+              onClick={() => sendPresenterMode('questions', true)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                presenterMode === 'questions' && revealAnswers
+                  ? 'bg-gold-accent text-night-dark ring-2 ring-gold'
+                  : 'bg-night-light text-white hover:bg-night-dark'
+              }`}
+            >
+              ✨ Показать ответы
+            </button>
+            <button
+              onClick={() => sendPresenterMode('idle', false)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                presenterMode === 'idle'
+                  ? 'bg-gray-600 text-white ring-2 ring-gray-400'
+                  : 'bg-night-light text-white hover:bg-night-dark'
+              }`}
+            >
+              ⏸️ Скрыть
+            </button>
+          </div>
+          <p className="text-gray-500 text-sm mt-3">
+            Текущий режим: <span className="text-gold">{presenterMode}</span>
+            {presenterMode === 'questions' && (
+              <span className="ml-2">
+                | Ответы: <span className={revealAnswers ? 'text-green-400' : 'text-gray-400'}>
+                  {revealAnswers ? 'показаны' : 'скрыты'}
+                </span>
+              </span>
+            )}
+          </p>
         </div>
 
         {/* Stats */}

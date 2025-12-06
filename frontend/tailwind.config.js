@@ -23,6 +23,10 @@ export default {
           medium: '#151520',
           light: '#1f1f2e',
         },
+        gold: {
+          DEFAULT: '#C4B68A',
+          accent: '#FFD86A',
+        },
       },
       animation: {
         'flame-rise': 'flameRise 4s ease-out forwards',

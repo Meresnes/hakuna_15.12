@@ -15,6 +15,9 @@
  * - test_vote: { name: string, choice: number }
  *   Admin-only: Creates a test vote for testing animations.
  * 
+ * - set_presenter_mode: { mode: string, revealAnswers?: boolean }
+ *   Admin-only: Sets presenter display mode and broadcasts to all presenters.
+ * 
  * SERVER → CLIENT:
  * - sync_state: { counts, total, last50, brightness }
  *   Sent on connection and reconnection. Contains full current state.
@@ -24,6 +27,9 @@
  * 
  * - update_counts: { counts, total, brightness }
  *   Broadcast after each vote with updated statistics.
+ * 
+ * - presenter_mode: { mode: string, revealAnswers?: boolean }
+ *   Broadcast to presenter clients when admin changes mode.
  * 
  * Reconnection:
  * - On reconnect, server sends sync_state with full current state.
@@ -62,6 +68,11 @@ interface SubmitChoiceData {
 interface TestVoteData {
   name: string;
   choice: number;
+}
+
+interface PresenterModeData {
+  mode: string;
+  revealAnswers?: boolean;
 }
 
 interface SyncStatePayload {
@@ -245,6 +256,25 @@ export function setupSocketHandlers(namespace: Namespace): void {
       const testChoice = choice || Math.floor(Math.random() * 4) + 1;
 
       await processVote(namespace, testName, testChoice, true);
+    });
+
+    // Handle set_presenter_mode - admin only
+    socket.on('set_presenter_mode', (data: PresenterModeData) => {
+      // Check if client is admin
+      if (socket.data.role !== 'admin') {
+        socket.emit('error', { message: 'Unauthorized' });
+        return;
+      }
+
+      const { mode, revealAnswers } = data;
+      console.info(`Admin ${socket.id} set presenter mode: ${mode}, revealAnswers: ${revealAnswers ?? false}`);
+
+      // Broadcast to all presenter clients
+      namespace.sockets.forEach((s) => {
+        if (s.data.role === 'presenter') {
+          s.emit('presenter_mode', { mode, revealAnswers });
+        }
+      });
     });
 
     // Handle disconnection

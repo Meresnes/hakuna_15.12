@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp, CHOICE_COLORS, CHOICE_TEXTS } from '../context/AppContext';
@@ -7,22 +7,35 @@ function Choose() {
   const navigate = useNavigate();
   const { user } = useApp();
   
+  const [name, setName] = useState('');
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState('');
 
   // Redirect if not verified
-  // if (!user.isVerified) {
-  //   navigate('/');
-  //   return null;
-  // }
+  useEffect(() => {
+    if (!user.isVerified) {
+      navigate('/');
+    }
+  }, [user.isVerified, navigate]);
 
   const handleChoiceClick = (choice: number) => {
     setSelectedChoice(choice);
   };
 
   const handleSubmit = async () => {
-    if (selectedChoice === null) return;
+    setError('');
+
+    if (!name.trim()) {
+      setError('Пожалуйста, введите ваше имя');
+      return;
+    }
+
+    if (selectedChoice === null) {
+      setError('Пожалуйста, выберите доброе дело');
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -30,7 +43,7 @@ function Choose() {
       const response = await fetch('/api/choice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: user.name, choice: selectedChoice }),
+        body: JSON.stringify({ name: name.trim(), choice: selectedChoice }),
       });
 
       if (response.ok) {
@@ -38,9 +51,11 @@ function Choose() {
         setTimeout(() => {
           navigate('/thanks');
         }, 2000);
+      } else {
+        setError('Ошибка при сохранении. Попробуйте ещё раз.');
       }
     } catch {
-      console.error('Failed to submit choice');
+      setError('Ошибка соединения. Попробуйте ещё раз.');
     } finally {
       setIsSubmitting(false);
     }
@@ -63,11 +78,30 @@ function Choose() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="font-cinzel text-3xl md:text-4xl font-bold text-white mb-2">
-            Выберите своё доброе дело
+            Добавь света в мир
           </h1>
           <p className="text-gray-400">
-            Привет, <span className="text-flame-yellow">{user.name}</span>!
+            Введите своё имя и выберите доброе дело
           </p>
+        </div>
+
+        {/* Name input */}
+        <div className="max-w-md mx-auto mb-8">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+            Ваше имя
+          </label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Введите имя"
+            className="w-full px-4 py-3 bg-night-dark border border-night-light rounded-lg 
+                     text-white placeholder-gray-500 focus:outline-none focus:ring-2 
+                     focus:ring-flame-orange focus:border-transparent transition-all"
+            maxLength={50}
+            disabled={isSubmitting}
+          />
         </div>
 
         {/* Choice buttons */}
@@ -134,17 +168,28 @@ function Choose() {
           ))}
         </div>
 
+        {/* Error message */}
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-red-400 text-sm text-center mb-4"
+          >
+            {error}
+          </motion.p>
+        )}
+
         {/* Submit button */}
         <motion.button
           onClick={handleSubmit}
-          disabled={selectedChoice === null || isSubmitting}
+          disabled={!name.trim() || selectedChoice === null || isSubmitting}
           className="w-full max-w-md mx-auto block py-4 bg-gradient-to-r from-flame-orange to-flame-red 
                    text-white font-semibold rounded-lg shadow-lg
                    hover:shadow-flame-orange/30 hover:shadow-xl
                    disabled:opacity-50 disabled:cursor-not-allowed
                    transition-all duration-300"
-          whileHover={{ scale: selectedChoice ? 1.02 : 1 }}
-          whileTap={{ scale: selectedChoice ? 0.98 : 1 }}
+          whileHover={{ scale: name.trim() && selectedChoice ? 1.02 : 1 }}
+          whileTap={{ scale: name.trim() && selectedChoice ? 0.98 : 1 }}
         >
           {isSubmitting ? 'Отправка...' : 'Подтвердить выбор'}
         </motion.button>

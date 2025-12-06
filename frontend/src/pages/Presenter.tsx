@@ -7,7 +7,7 @@ function Presenter() {
   const { state, updateState } = useApp();
   const containerRef = useRef<HTMLDivElement>(null);
   
-  const { flames, isConnected } = useSocket({
+  const { flames } = useSocket({
     role: 'presenter',
     onNewVote: (vote) => {
       // Update counts when new vote arrives
@@ -29,14 +29,15 @@ function Presenter() {
   });
 
   // Calculate brightness
-  const brightness = Math.min(
-    Math.max(
-      state.brightnessRange.min + 
-        (state.total / state.target) * (state.brightnessRange.max - state.brightnessRange.min),
-      state.brightnessRange.min
-    ),
-    state.brightnessRange.max
-  );
+  // const brightness = Math.min(
+  //   Math.max(
+  //     state.brightnessRange.min +
+  //       (state.total / state.target) * (state.brightnessRange.max - state.brightnessRange.min),
+  //     state.brightnessRange.min
+  //   ),
+  //   state.brightnessRange.max
+  // );
+  const brightness = 5;
 
   return (
     <div 
@@ -75,28 +76,28 @@ function Presenter() {
       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
         <div className="max-w-4xl mx-auto">
           {/* Connection status */}
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            <div 
-              className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
-            />
-            <span className="text-xs text-gray-400">
-              {isConnected ? 'Подключено' : 'Отключено'}
-            </span>
-          </div>
+          {/*<div className="absolute top-4 right-4 flex items-center gap-2">*/}
+          {/*  <div */}
+          {/*    className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}*/}
+          {/*  />*/}
+          {/*  <span className="text-xs text-gray-400">*/}
+          {/*    {isConnected ? 'Подключено' : 'Отключено'}*/}
+          {/*  </span>*/}
+          {/*</div>*/}
 
           {/* Progress bar */}
-          <div className="mb-4">
-            <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span>Прогресс</span>
-              <span>{state.total} / {state.target}</span>
-            </div>
-            <div className="h-2 bg-night-light rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-flame-red via-flame-orange to-flame-yellow transition-all duration-500"
-                style={{ width: `${Math.min((state.total / state.target) * 100, 100)}%` }}
-              />
-            </div>
-          </div>
+          {/*<div className="mb-4">*/}
+          {/*  <div className="flex justify-between text-sm text-gray-400 mb-2">*/}
+          {/*    <span>Прогресс</span>*/}
+          {/*    <span>{state.total} / {state.target}</span>*/}
+          {/*  </div>*/}
+          {/*  <div className="h-2 bg-night-light rounded-full overflow-hidden">*/}
+          {/*    <div */}
+          {/*      className="h-full bg-gradient-to-r from-flame-red via-flame-orange to-flame-yellow transition-all duration-500"*/}
+          {/*      style={{ width: `${Math.min((state.total / state.target) * 100, 100)}%` }}*/}
+          {/*    />*/}
+          {/*  </div>*/}
+          {/*</div>*/}
 
           {/* Counts */}
           <div className="grid grid-cols-4 gap-4">

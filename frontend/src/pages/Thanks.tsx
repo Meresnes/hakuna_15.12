@@ -1,8 +1,6 @@
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 function Thanks() {
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-radial">
@@ -80,23 +78,23 @@ function Thanks() {
         >
           Ваш выбор записан и уже отображается на экране события.
           <br />
-          Пусть ваш свет освещает путь другим!
+          {/*Пусть ваш свет освещает путь другим!*/}
         </motion.p>
 
         {/* Back button */}
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          onClick={() => navigate('/')}
-          className="px-8 py-3 bg-night-light text-white rounded-lg 
-                   hover:bg-night-medium transition-colors duration-300
-                   border border-night-light hover:border-flame-orange/50"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Вернуться на главную
-        </motion.button>
+        {/*<motion.button*/}
+        {/*  initial={{ opacity: 0, y: 20 }}*/}
+        {/*  animate={{ opacity: 1, y: 0 }}*/}
+        {/*  transition={{ delay: 0.8 }}*/}
+        {/*  onClick={() => navigate('/')}*/}
+        {/*  className="px-8 py-3 bg-night-light text-white rounded-lg */}
+        {/*           hover:bg-night-medium transition-colors duration-300*/}
+        {/*           border border-night-light hover:border-flame-orange/50"*/}
+        {/*  whileHover={{ scale: 1.05 }}*/}
+        {/*  whileTap={{ scale: 0.95 }}*/}
+        {/*>*/}
+        {/*  Вернуться на главную*/}
+        {/*</motion.button>*/}
       </motion.div>
     </div>
   );

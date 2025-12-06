@@ -1,11 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 
-// Pages - will be implemented in Block 5
+// Pages
 import Enter from './pages/Enter';
 import Choose from './pages/Choose';
 import Thanks from './pages/Thanks';
 import Presenter from './pages/Presenter';
+import PresenterQuestionsPage from './pages/PresenterQuestionsPage';
 import Admin from './pages/Admin';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/choose" element={<Choose />} />
           <Route path="/thanks" element={<Thanks />} />
           <Route path="/presenter" element={<Presenter />} />
+          <Route path="/presenter/questions" element={<PresenterQuestionsPage />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>

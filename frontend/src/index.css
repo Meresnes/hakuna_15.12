@@ -10,6 +10,8 @@
   --night-dark: #0a0a0f;
   --night-medium: #151520;
   --night-light: #1f1f2e;
+  --gold: #C4B68A;
+  --gold-accent: #FFD86A;
 }
 
 * {
@@ -86,5 +88,64 @@ body {
 
 .font-inter {
   font-family: 'Inter', sans-serif;
+}
+
+/* ===========================================
+   Presenter Questions Page Styles
+   =========================================== */
+
+/* Fullscreen page background */
+.presenter-questions-page {
+  background: linear-gradient(180deg, #000000 0%, #0a0a0f 100%);
+  min-height: 100vh;
+}
+
+/* Questions card with semi-transparent background */
+.questions-card {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(196, 182, 138, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* Answer glow/pulse animation */
+.answer-glow {
+  animation: answerGlow 700ms ease-out forwards, answerPulse 2s ease-in-out 700ms infinite;
+}
+
+@keyframes answerGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(255, 216, 106, 0);
+    transform: scale(0.8);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 216, 106, 0.8), 0 0 60px rgba(255, 216, 106, 0.4);
+    transform: scale(1.1);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(255, 216, 106, 0.5), 0 0 30px rgba(255, 216, 106, 0.2);
+    transform: scale(1);
+  }
+}
+
+@keyframes answerPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 216, 106, 0.5), 0 0 30px rgba(255, 216, 106, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 216, 106, 0.7), 0 0 50px rgba(255, 216, 106, 0.3);
+  }
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 

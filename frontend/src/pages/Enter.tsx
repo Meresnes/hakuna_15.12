@@ -7,7 +7,6 @@ function Enter() {
   const navigate = useNavigate();
   const { state, setUser } = useApp();
   
-  const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,11 +14,6 @@ function Enter() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!name.trim()) {
-      setError('Пожалуйста, введите ваше имя');
-      return;
-    }
 
     if (code.length !== 4 || !/^\d{4}$/.test(code)) {
       setError('Код должен содержать 4 цифры');
@@ -32,7 +26,7 @@ function Enter() {
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), code }),
+        body: JSON.stringify({ code }),
       });
 
       const data = await response.json() as { success?: boolean; error?: string };
@@ -42,7 +36,7 @@ function Enter() {
         return;
       }
 
-      setUser({ name: name.trim(), isVerified: true });
+      setUser({ name: '', isVerified: true });
       navigate('/choose');
     } catch {
       setError('Ошибка соединения. Попробуйте ещё раз.');
@@ -61,8 +55,7 @@ function Enter() {
       >
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-gradient-flame mb-3">
-            Hakuna Light
+          <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-gradient-flame mb-3">Хакуна 2025
           </h1>
           <p className="font-great-vibes text-2xl text-flame-yellow opacity-80">
             Добавь света в мир
@@ -78,29 +71,10 @@ function Enter() {
           transition={{ delay: 0.2, duration: 0.4 }}
         >
           <div className="space-y-6">
-            {/* Name input */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                Ваше имя
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Введите имя"
-                className="w-full px-4 py-3 bg-night-dark border border-night-light rounded-lg 
-                         text-white placeholder-gray-500 focus:outline-none focus:ring-2 
-                         focus:ring-flame-orange focus:border-transparent transition-all"
-                maxLength={50}
-                disabled={isSubmitting}
-              />
-            </div>
-
             {/* Code input */}
             <div>
               <label htmlFor="code" className="block text-sm font-medium text-gray-300 mb-2">
-                Код доступа (4 цифры)
+                Введите код (4 цифры)
               </label>
               <input
                 type="text"
@@ -133,7 +107,7 @@ function Enter() {
             {/* Submit button */}
             <motion.button
               type="submit"
-              disabled={isSubmitting || !name.trim() || code.length !== 4}
+              disabled={isSubmitting || code.length !== 4}
               className="w-full py-4 bg-gradient-to-r from-flame-orange to-flame-red 
                        text-white font-semibold rounded-lg shadow-lg
                        hover:shadow-flame-orange/30 hover:shadow-xl
@@ -169,7 +143,7 @@ function Enter() {
           </div>
         </motion.form>
 
-        {/* Footer hint */}
+         {/*Footer hint*/}
         <p className="text-center text-gray-500 text-sm mt-6">
           Текущий код: <span className="text-gray-400">{state.code}</span>
         </p>
