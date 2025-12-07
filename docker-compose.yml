@@ -28,6 +28,8 @@ services:
       PORT: 3001
       DATABASE_URL: postgres://${POSTGRES_USER:-hakuna}:${POSTGRES_PASSWORD:-hakuna_secret}@postgres:5432/${POSTGRES_DB:-hakuna_db}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      # Явно указываем путь к миграциям для надежности
+      MIGRATIONS_DIR: /app/db/migrations
       # Важно: разрешаем CORS для нашего HTTPS домена
       CORS_ORIGIN: https://hanuka-2025.duckdns.org
     depends_on:

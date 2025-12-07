@@ -24,6 +24,11 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 COPY db/migrations ./db/migrations
 
+# Verify migrations directory exists
+RUN test -d /app/db/migrations || (echo "ERROR: Migrations directory not found!" && exit 1) && \
+    echo "✅ Migrations directory verified: /app/db/migrations" && \
+    ls -la /app/db/migrations
+
 EXPOSE 3001
 
 CMD ["node", "dist/server.js"]

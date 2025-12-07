@@ -12,19 +12,27 @@ const __dirname = dirname(__filename);
  * In Docker/production: /app/db/migrations
  * In dev: ../../../db/migrations (relative to backend/src/db)
  */
-function getMigrationsDir(): string {
-  // Use environment variable if set
+async function getMigrationsDir(): Promise<string> {
+  // Use environment variable if set (highest priority)
   if (process.env.MIGRATIONS_DIR) {
     return process.env.MIGRATIONS_DIR;
   }
   
-  // In production (Docker), always use absolute path
+  // In production (Docker), try absolute path first
   if (process.env.NODE_ENV === 'production') {
-    return '/app/db/migrations';
+    const productionPath = '/app/db/migrations';
+    // Verify the path exists in production
+    try {
+      await access(productionPath, constants.F_OK);
+      return productionPath;
+    } catch (error) {
+      console.warn(`⚠️  Production path ${productionPath} not found, trying fallback`);
+    }
   }
   
-  // In dev, use relative path
-  return join(__dirname, '../../../db/migrations');
+  // Fallback: use relative path (for dev or if production path doesn't exist)
+  const relativePath = join(__dirname, '../../../db/migrations');
+  return relativePath;
 }
 
 interface MigrationRecord {
@@ -60,17 +68,22 @@ async function getAppliedMigrations(): Promise<string[]> {
  */
 async function getPendingMigrations(): Promise<string[]> {
   const applied = await getAppliedMigrations();
-  const migrationsDir = getMigrationsDir();
+  const migrationsDir = await getMigrationsDir();
+  
+  console.info(`🔍 Checking migrations directory: ${migrationsDir}`);
   
   // Check if migrations directory exists
   try {
     await access(migrationsDir, constants.F_OK);
+    console.info(`✅ Migrations directory exists: ${migrationsDir}`);
   } catch (error) {
     const err = error as NodeJS.ErrnoException;
     if (err.code === 'ENOENT') {
       throw new Error(
         `Migrations directory not found: ${migrationsDir}. ` +
-        `Please ensure the migrations directory exists and is accessible.`
+        `Please ensure the migrations directory exists and is accessible. ` +
+        `NODE_ENV: ${process.env.NODE_ENV || 'not set'}, ` +
+        `MIGRATIONS_DIR: ${process.env.MIGRATIONS_DIR || 'not set'}`
       );
     }
     throw new Error(
@@ -99,7 +112,7 @@ async function getPendingMigrations(): Promise<string[]> {
  * Apply a single migration
  */
 async function applyMigration(filename: string): Promise<void> {
-  const migrationsDir = getMigrationsDir();
+  const migrationsDir = await getMigrationsDir();
   const filepath = join(migrationsDir, filename);
   const sql = await readFile(filepath, 'utf-8');
   
@@ -131,15 +144,21 @@ async function applyMigration(filename: string): Promise<void> {
  * Run all pending migrations
  */
 export async function runMigrations(): Promise<void> {
-  const migrationsDir = getMigrationsDir();
   console.info('🔄 Running database migrations...');
-  console.info(`📁 Migrations directory: ${migrationsDir}`);
-  console.info(`📁 __dirname: ${__dirname}`);
   console.info(`📁 NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+  console.info(`📁 MIGRATIONS_DIR: ${process.env.MIGRATIONS_DIR || 'not set'}`);
+  console.info(`📁 __dirname: ${__dirname}`);
   
   await createMigrationsTable();
   
-  const pending = await getPendingMigrations();
+  let pending: string[];
+  try {
+    pending = await getPendingMigrations();
+  } catch (error) {
+    const err = error as Error;
+    console.error(`❌ Failed to get pending migrations: ${err.message}`);
+    throw error;
+  }
   
   if (pending.length === 0) {
     console.info('✅ No pending migrations');
@@ -149,7 +168,13 @@ export async function runMigrations(): Promise<void> {
   console.info(`📋 Found ${pending.length} pending migration(s)`);
   
   for (const migration of pending) {
-    await applyMigration(migration);
+    try {
+      await applyMigration(migration);
+    } catch (error) {
+      const err = error as Error;
+      console.error(`❌ Failed to apply migration ${migration}: ${err.message}`);
+      throw error;
+    }
   }
   
   console.info('✅ All migrations applied successfully');
