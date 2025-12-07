@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useApp, CHOICE_COLORS, CHOICE_TEXTS } from '../context/AppContext';
+import {CHOICE_COLORS, CHOICE_TEXTS } from '../context/AppContext';
 
 function Choose() {
   const navigate = useNavigate();
-  const { user } = useApp();
   
   const [name, setName] = useState('');
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);

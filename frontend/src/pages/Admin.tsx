@@ -79,30 +79,30 @@ function Admin() {
     }
   };
 
-  const handleExport = async () => {
-    const pwd = sessionStorage.getItem('adminAuth');
-    if (!pwd) return;
-
-    try {
-      const response = await fetch('/api/admin/export', {
-        headers: {
-          'Authorization': `Basic ${btoa(`admin:${pwd}`)}`,
-        },
-      });
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `votes-${new Date().toISOString().split('T')[0]}.csv`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-      }
-    } catch (err) {
-      console.error('Export failed:', err);
-    }
-  };
+  // const handleExport = async () => {
+  //   const pwd = sessionStorage.getItem('adminAuth');
+  //   if (!pwd) return;
+  //
+  //   try {
+  //     const response = await fetch('/api/admin/export', {
+  //       headers: {
+  //         'Authorization': `Basic ${btoa(`admin:${pwd}`)}`,
+  //       },
+  //     });
+  //
+  //     if (response.ok) {
+  //       const blob = await response.blob();
+  //       const url = window.URL.createObjectURL(blob);
+  //       const a = document.createElement('a');
+  //       a.href = url;
+  //       a.download = `votes-${new Date().toISOString().split('T')[0]}.csv`;
+  //       a.click();
+  //       window.URL.revokeObjectURL(url);
+  //     }
+  //   } catch (err) {
+  //     console.error('Export failed:', err);
+  //   }
+  // };
 
   const handleReset = async () => {
     const pwd = sessionStorage.getItem('adminAuth');
