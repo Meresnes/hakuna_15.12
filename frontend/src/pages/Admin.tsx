@@ -203,144 +203,144 @@ function Admin() {
             >
               🔥 Тест голоса
             </button>
-            <button
-              onClick={handleExport}
-              className="px-4 py-2 bg-night-light text-white rounded-lg
-                       hover:bg-night-medium transition-colors"
-            >
-              📥 Экспорт CSV
-            </button>
+            {/*<button*/}
+            {/*  onClick={handleExport}*/}
+            {/*  className="px-4 py-2 bg-night-light text-white rounded-lg*/}
+            {/*           hover:bg-night-medium transition-colors"*/}
+            {/*>*/}
+            {/*  📥 Экспорт CSV*/}
+            {/*</button>*/}
             <button
               onClick={handleReset}
               className="px-4 py-2 bg-red-600 text-white rounded-lg
                        hover:bg-red-700 transition-colors"
             >
-              🗑️ Сброс БД
+              🗑️ Сброс Голосов
             </button>
           </div>
         </div>
 
         {/* Presenter Control */}
-        <div className="bg-night-medium rounded-xl p-4 md:p-6 mb-8">
-          <h2 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="text-gold">📺</span> Управление презентером
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => sendPresenterMode('questions', false)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                presenterMode === 'questions' && !revealAnswers
-                  ? 'bg-gold text-night-dark ring-2 ring-gold-accent'
-                  : 'bg-night-light text-white hover:bg-night-dark'
-              }`}
-            >
-              📝 Показать вопросы
-            </button>
-            <button
-              onClick={() => sendPresenterMode('questions', true)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                presenterMode === 'questions' && revealAnswers
-                  ? 'bg-gold-accent text-night-dark ring-2 ring-gold'
-                  : 'bg-night-light text-white hover:bg-night-dark'
-              }`}
-            >
-              ✨ Показать ответы
-            </button>
-            <button
-              onClick={() => sendPresenterMode('idle', false)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                presenterMode === 'idle'
-                  ? 'bg-gray-600 text-white ring-2 ring-gray-400'
-                  : 'bg-night-light text-white hover:bg-night-dark'
-              }`}
-            >
-              ⏸️ Скрыть
-            </button>
-          </div>
-          <p className="text-gray-500 text-sm mt-3">
-            Текущий режим: <span className="text-gold">{presenterMode}</span>
-            {presenterMode === 'questions' && (
-              <span className="ml-2">
-                | Ответы: <span className={revealAnswers ? 'text-green-400' : 'text-gray-400'}>
-                  {revealAnswers ? 'показаны' : 'скрыты'}
-                </span>
-              </span>
-            )}
-          </p>
-        </div>
+        {/*<div className="bg-night-medium rounded-xl p-4 md:p-6 mb-8">*/}
+        {/*  <h2 className="font-semibold text-white mb-4 flex items-center gap-2">*/}
+        {/*    <span className="text-gold">📺</span> Управление презентером*/}
+        {/*  </h2>*/}
+        {/*  <div className="flex flex-wrap gap-3">*/}
+        {/*    <button*/}
+        {/*      onClick={() => sendPresenterMode('questions', false)}*/}
+        {/*      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${*/}
+        {/*        presenterMode === 'questions' && !revealAnswers*/}
+        {/*          ? 'bg-gold text-night-dark ring-2 ring-gold-accent'*/}
+        {/*          : 'bg-night-light text-white hover:bg-night-dark'*/}
+        {/*      }`}*/}
+        {/*    >*/}
+        {/*      📝 Показать вопросы*/}
+        {/*    </button>*/}
+        {/*    <button*/}
+        {/*      onClick={() => sendPresenterMode('questions', true)}*/}
+        {/*      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${*/}
+        {/*        presenterMode === 'questions' && revealAnswers*/}
+        {/*          ? 'bg-gold-accent text-night-dark ring-2 ring-gold'*/}
+        {/*          : 'bg-night-light text-white hover:bg-night-dark'*/}
+        {/*      }`}*/}
+        {/*    >*/}
+        {/*      ✨ Показать ответы*/}
+        {/*    </button>*/}
+        {/*    <button*/}
+        {/*      onClick={() => sendPresenterMode('idle', false)}*/}
+        {/*      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${*/}
+        {/*        presenterMode === 'idle'*/}
+        {/*          ? 'bg-gray-600 text-white ring-2 ring-gray-400'*/}
+        {/*          : 'bg-night-light text-white hover:bg-night-dark'*/}
+        {/*      }`}*/}
+        {/*    >*/}
+        {/*      ⏸️ Скрыть*/}
+        {/*    </button>*/}
+        {/*  </div>*/}
+        {/*  <p className="text-gray-500 text-sm mt-3">*/}
+        {/*    Текущий режим: <span className="text-gold">{presenterMode}</span>*/}
+        {/*    {presenterMode === 'questions' && (*/}
+        {/*      <span className="ml-2">*/}
+        {/*        | Ответы: <span className={revealAnswers ? 'text-green-400' : 'text-gray-400'}>*/}
+        {/*          {revealAnswers ? 'показаны' : 'скрыты'}*/}
+        {/*        </span>*/}
+        {/*      </span>*/}
+        {/*    )}*/}
+        {/*  </p>*/}
+        {/*</div>*/}
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <div className="bg-night-medium p-4 rounded-xl">
-            <div className="text-gray-400 text-sm">Всего</div>
-            <div className="text-3xl font-bold text-white">{state.total}</div>
-          </div>
-          {[1, 2, 3, 4].map(choice => (
-            <div key={choice} className="bg-night-medium p-4 rounded-xl">
-              <div className="flex items-center gap-2 mb-1">
-                <div 
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: CHOICE_COLORS[choice] }}
-                />
-                <span className="text-gray-400 text-sm">Выбор {choice}</span>
-              </div>
-              <div className="text-2xl font-bold text-white">
-                {state.counts[choice as keyof typeof state.counts]}
-              </div>
-            </div>
-          ))}
-        </div>
+        {/*/!* Stats *!/*/}
+        {/*<div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">*/}
+        {/*  <div className="bg-night-medium p-4 rounded-xl">*/}
+        {/*    <div className="text-gray-400 text-sm">Всего</div>*/}
+        {/*    <div className="text-3xl font-bold text-white">{state.total}</div>*/}
+        {/*  </div>*/}
+        {/*  {[1, 2, 3, 4].map(choice => (*/}
+        {/*    <div key={choice} className="bg-night-medium p-4 rounded-xl">*/}
+        {/*      <div className="flex items-center gap-2 mb-1">*/}
+        {/*        <div */}
+        {/*          className="w-3 h-3 rounded-full"*/}
+        {/*          style={{ backgroundColor: CHOICE_COLORS[choice] }}*/}
+        {/*        />*/}
+        {/*        <span className="text-gray-400 text-sm">Выбор {choice}</span>*/}
+        {/*      </div>*/}
+        {/*      <div className="text-2xl font-bold text-white">*/}
+        {/*        {state.counts[choice as keyof typeof state.counts]}*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*  ))}*/}
+        {/*</div>*/}
 
-        {/* Last 50 votes */}
-        <div className="bg-night-medium rounded-xl overflow-hidden">
-          <div className="p-4 border-b border-night-light">
-            <h2 className="font-semibold text-white">Последние 50 голосов</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-night-light">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Имя</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Выбор</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Время</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-night-light">
-                {last50.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="px-4 py-8 text-center text-gray-500">
-                      Нет записей
-                    </td>
-                  </tr>
-                ) : (
-                  last50.map(vote => (
-                    <tr key={vote.id} className="hover:bg-night-light/50">
-                      <td className="px-4 py-3 text-white">{vote.name}</td>
-                      <td className="px-4 py-3">
-                        <span 
-                          className="inline-flex items-center gap-2 px-2 py-1 rounded text-sm"
-                          style={{ 
-                            backgroundColor: `${CHOICE_COLORS[vote.choice]}20`,
-                            color: CHOICE_COLORS[vote.choice],
-                          }}
-                        >
-                          <span 
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: CHOICE_COLORS[vote.choice] }}
-                          />
-                          {vote.choice}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-400 text-sm">
-                        {new Date(vote.created_at).toLocaleString('ru-RU')}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {/*/!* Last 50 votes *!/*/}
+        {/*<div className="bg-night-medium rounded-xl overflow-hidden">*/}
+        {/*  <div className="p-4 border-b border-night-light">*/}
+        {/*    <h2 className="font-semibold text-white">Последние 50 голосов</h2>*/}
+        {/*  </div>*/}
+        {/*  <div className="overflow-x-auto">*/}
+        {/*    <table className="w-full">*/}
+        {/*      <thead className="bg-night-light">*/}
+        {/*        <tr>*/}
+        {/*          <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Имя</th>*/}
+        {/*          <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Выбор</th>*/}
+        {/*          <th className="px-4 py-3 text-left text-sm font-medium text-gray-400">Время</th>*/}
+        {/*        </tr>*/}
+        {/*      </thead>*/}
+        {/*      <tbody className="divide-y divide-night-light">*/}
+        {/*        {last50.length === 0 ? (*/}
+        {/*          <tr>*/}
+        {/*            <td colSpan={3} className="px-4 py-8 text-center text-gray-500">*/}
+        {/*              Нет записей*/}
+        {/*            </td>*/}
+        {/*          </tr>*/}
+        {/*        ) : (*/}
+        {/*          last50.map(vote => (*/}
+        {/*            <tr key={vote.id} className="hover:bg-night-light/50">*/}
+        {/*              <td className="px-4 py-3 text-white">{vote.name}</td>*/}
+        {/*              <td className="px-4 py-3">*/}
+        {/*                <span */}
+        {/*                  className="inline-flex items-center gap-2 px-2 py-1 rounded text-sm"*/}
+        {/*                  style={{ */}
+        {/*                    backgroundColor: `${CHOICE_COLORS[vote.choice]}20`,*/}
+        {/*                    color: CHOICE_COLORS[vote.choice],*/}
+        {/*                  }}*/}
+        {/*                >*/}
+        {/*                  <span */}
+        {/*                    className="w-2 h-2 rounded-full"*/}
+        {/*                    style={{ backgroundColor: CHOICE_COLORS[vote.choice] }}*/}
+        {/*                  />*/}
+        {/*                  {vote.choice}*/}
+        {/*                </span>*/}
+        {/*              </td>*/}
+        {/*              <td className="px-4 py-3 text-gray-400 text-sm">*/}
+        {/*                {new Date(vote.created_at).toLocaleString('ru-RU')}*/}
+        {/*              </td>*/}
+        {/*            </tr>*/}
+        {/*          ))*/}
+        {/*        )}*/}
+        {/*      </tbody>*/}
+        {/*    </table>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
       </div>
     </div>
   );

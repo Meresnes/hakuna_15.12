@@ -52,7 +52,7 @@ function Thanks() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="font-cinzel text-4xl md:text-5xl font-bold text-gradient-flame mb-4"
+          className="h1 text-center mb-4 questions-title-glow"
         >
           Спасибо!
         </motion.h1>
@@ -61,7 +61,7 @@ function Thanks() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="font-great-vibes text-2xl text-flame-yellow mb-8"
+          className="font-script text-2xl md:text-3xl text-white-300 opacity-90 mb-8"
         >
           Вы добавили света в этот мир
         </motion.p>
@@ -70,7 +70,7 @@ function Thanks() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-gray-400 mb-8"
+          className="text-text-muted mb-8"
         >
           Ваш выбор записан и уже отображается на экране события.
           <br />
