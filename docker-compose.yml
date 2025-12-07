@@ -20,8 +20,8 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend/Dockerfile
     container_name: hakuna-backend
     environment:
       NODE_ENV: production
@@ -29,6 +29,7 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-hakuna}:${POSTGRES_PASSWORD:-hakuna_secret}@postgres:5432/${POSTGRES_DB:-hakuna_db}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
       CORS_ORIGIN: http://localhost:80
+      MIGRATIONS_DIR: /app/db/migrations
     ports:
       - "3001:3001"
     depends_on:

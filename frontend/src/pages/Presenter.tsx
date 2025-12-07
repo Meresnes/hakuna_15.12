@@ -33,9 +33,9 @@ function Presenter() {
   // Calculate brightness based on total votes
   const brightness = Math.min(
     Math.max(
-      state.brightnessRange.min - 0.1 +
+      state.brightnessRange.min +
         (state.total / state.target) * (state.brightnessRange.max - state.brightnessRange.min),
-      state.brightnessRange.min - 0.5
+      state.brightnessRange.min
     ),
     state.brightnessRange.max
   );

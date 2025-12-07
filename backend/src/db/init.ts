@@ -1,4 +1,5 @@
-import { readdir, readFile } from 'fs/promises';
+import { readdir, readFile, access } from 'fs/promises';
+import { constants } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import pool from './pool.js';
@@ -6,8 +7,25 @@ import pool from './pool.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Migrations directory path
-const MIGRATIONS_DIR = join(__dirname, '../../../db/migrations');
+/**
+ * Get migrations directory path
+ * In Docker/production: /app/db/migrations
+ * In dev: ../../../db/migrations (relative to backend/src/db)
+ */
+function getMigrationsDir(): string {
+  // Use environment variable if set
+  if (process.env.MIGRATIONS_DIR) {
+    return process.env.MIGRATIONS_DIR;
+  }
+  
+  // In production (Docker), always use absolute path
+  if (process.env.NODE_ENV === 'production') {
+    return '/app/db/migrations';
+  }
+  
+  // In dev, use relative path
+  return join(__dirname, '../../../db/migrations');
+}
 
 interface MigrationRecord {
   name: string;
@@ -42,17 +60,38 @@ async function getAppliedMigrations(): Promise<string[]> {
  */
 async function getPendingMigrations(): Promise<string[]> {
   const applied = await getAppliedMigrations();
+  const migrationsDir = getMigrationsDir();
+  
+  // Check if migrations directory exists
+  try {
+    await access(migrationsDir, constants.F_OK);
+  } catch (error) {
+    const err = error as NodeJS.ErrnoException;
+    if (err.code === 'ENOENT') {
+      throw new Error(
+        `Migrations directory not found: ${migrationsDir}. ` +
+        `Please ensure the migrations directory exists and is accessible.`
+      );
+    }
+    throw new Error(
+      `Cannot access migrations directory ${migrationsDir}: ${err.message}`
+    );
+  }
   
   try {
-    const files = await readdir(MIGRATIONS_DIR);
+    const files = await readdir(migrationsDir);
     const sqlFiles = files
       .filter(f => f.endsWith('.sql'))
       .sort(); // Sort alphabetically (001, 002, etc.)
     
+    console.info(`📁 Found ${sqlFiles.length} migration file(s) in ${migrationsDir}`);
+    
     return sqlFiles.filter(f => !applied.includes(f));
   } catch (error) {
-    console.error('Error reading migrations directory:', error);
-    return [];
+    const err = error as NodeJS.ErrnoException;
+    throw new Error(
+      `Error reading migrations directory ${migrationsDir}: ${err.message}`
+    );
   }
 }
 
@@ -60,7 +99,8 @@ async function getPendingMigrations(): Promise<string[]> {
  * Apply a single migration
  */
 async function applyMigration(filename: string): Promise<void> {
-  const filepath = join(MIGRATIONS_DIR, filename);
+  const migrationsDir = getMigrationsDir();
+  const filepath = join(migrationsDir, filename);
   const sql = await readFile(filepath, 'utf-8');
   
   const client = await pool.connect();
@@ -91,7 +131,11 @@ async function applyMigration(filename: string): Promise<void> {
  * Run all pending migrations
  */
 export async function runMigrations(): Promise<void> {
+  const migrationsDir = getMigrationsDir();
   console.info('🔄 Running database migrations...');
+  console.info(`📁 Migrations directory: ${migrationsDir}`);
+  console.info(`📁 __dirname: ${__dirname}`);
+  console.info(`📁 NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
   
   await createMigrationsTable();
   
