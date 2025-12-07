@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 /**
  * Get migrations directory path
- * In Docker/production: /app/db/migrations
+ * In Docker/production: /app/db/migrations (or MIGRATIONS_DIR env var)
  * In dev: ../../../db/migrations (relative to backend/src/db)
  */
 async function getMigrationsDir(): Promise<string> {
@@ -18,7 +18,7 @@ async function getMigrationsDir(): Promise<string> {
     return process.env.MIGRATIONS_DIR;
   }
   
-  // In production (Docker), try absolute path first
+  // In production (Docker), always use absolute path - no fallback
   if (process.env.NODE_ENV === 'production') {
     const productionPath = '/app/db/migrations';
     // Verify the path exists in production
@@ -26,11 +26,16 @@ async function getMigrationsDir(): Promise<string> {
       await access(productionPath, constants.F_OK);
       return productionPath;
     } catch (error) {
-      console.warn(`⚠️  Production path ${productionPath} not found, trying fallback`);
+      const err = error as NodeJS.ErrnoException;
+      throw new Error(
+        `Production migrations directory not found: ${productionPath}. ` +
+        `Please ensure MIGRATIONS_DIR is set or the directory exists. ` +
+        `Error: ${err.message}`
+      );
     }
   }
   
-  // Fallback: use relative path (for dev or if production path doesn't exist)
+  // Development: use relative path
   const relativePath = join(__dirname, '../../../db/migrations');
   return relativePath;
 }
@@ -145,9 +150,15 @@ async function applyMigration(filename: string): Promise<void> {
  */
 export async function runMigrations(): Promise<void> {
   console.info('🔄 Running database migrations...');
-  console.info(`📁 NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-  console.info(`📁 MIGRATIONS_DIR: ${process.env.MIGRATIONS_DIR || 'not set'}`);
-  console.info(`📁 __dirname: ${__dirname}`);
+  console.info('📋 Environment variables:');
+  console.info(`   NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+  console.info(`   MIGRATIONS_DIR: ${process.env.MIGRATIONS_DIR || 'not set'}`);
+  console.info(`   __dirname: ${__dirname}`);
+  
+  // In production, warn if MIGRATIONS_DIR is not set (but we'll use default /app/db/migrations)
+  if (process.env.NODE_ENV === 'production' && !process.env.MIGRATIONS_DIR) {
+    console.warn('⚠️  MIGRATIONS_DIR not set in production, using default: /app/db/migrations');
+  }
   
   await createMigrationsTable();
   
