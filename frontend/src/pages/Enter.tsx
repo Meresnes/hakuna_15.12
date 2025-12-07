@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
@@ -7,21 +7,80 @@ function Enter() {
   const navigate = useNavigate();
   const { state, setUser } = useApp();
   
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(['', '', '', '']);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Convert code array to string
+  const codeString = code.join('');
+
+  // Handle input change
+  const handleInputChange = (index: number, value: string) => {
+    // Only allow digits
+    const digit = value.replace(/\D/g, '').slice(0, 1);
+    
+    const newCode = [...code];
+    newCode[index] = digit;
+    setCode(newCode);
+    setError('');
+
+    // Auto-focus next input if digit entered
+    if (digit && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  // Handle key down (Backspace, Arrow keys)
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (!code[index] && index > 0) {
+        // If current field is empty, focus previous and clear it
+        const newCode = [...code];
+        newCode[index - 1] = '';
+        setCode(newCode);
+        inputRefs.current[index - 1]?.focus();
+      } else {
+        // Clear current field
+        const newCode = [...code];
+        newCode[index] = '';
+        setCode(newCode);
+      }
+    } else if (e.key === 'ArrowLeft' && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === 'ArrowRight' && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  // Handle paste
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4);
+    
+    const newCode: string[] = ['', '', '', ''];
+    for (let i = 0; i < pastedData.length && i < 4; i++) {
+      const char = pastedData.charAt(i);
+      if (char) {
+        newCode[i] = char;
+      }
+    }
+    
+    setCode(newCode);
+    
+    // Focus the next empty field or the last field
+    const nextIndex = Math.min(pastedData.length, 3);
+    setTimeout(() => {
+      inputRefs.current[nextIndex]?.focus();
+    }, 0);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!name.trim()) {
-      setError('Пожалуйста, введите ваше имя');
-      return;
-    }
-
-    if (code.length !== 4 || !/^\d{4}$/.test(code)) {
+    const codeStr = code.join('');
+    if (codeStr.length !== 4 || !/^\d{4}$/.test(codeStr)) {
       setError('Код должен содержать 4 цифры');
       return;
     }
@@ -32,7 +91,7 @@ function Enter() {
       const response = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), code }),
+        body: JSON.stringify({ code: codeStr }),
       });
 
       const data = await response.json() as { success?: boolean; error?: string };
@@ -42,7 +101,7 @@ function Enter() {
         return;
       }
 
-      setUser({ name: name.trim(), isVerified: true });
+      setUser({ name: '', isVerified: true });
       navigate('/choose');
     } catch {
       setError('Ошибка соединения. Попробуйте ещё раз.');
@@ -61,10 +120,8 @@ function Enter() {
       >
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-gradient-flame mb-3">
-            Hakuna Light
-          </h1>
-          <p className="font-great-vibes text-2xl text-flame-yellow opacity-80">
+          <h1 className="h1 text-center mb-3">Ханука 2025</h1>
+          <p className="font-script text-2xl md:text-3xl text-black-300 opacity-90">
             Добавь света в мир
           </p>
         </div>
@@ -72,51 +129,45 @@ function Enter() {
         {/* Form */}
         <motion.form
           onSubmit={handleSubmit}
-          className="bg-night-medium/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-night-light"
+          className="bg-bg-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-divider"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.4 }}
         >
           <div className="space-y-6">
-            {/* Name input */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                Ваше имя
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Введите имя"
-                className="w-full px-4 py-3 bg-night-dark border border-night-light rounded-lg 
-                         text-white placeholder-gray-500 focus:outline-none focus:ring-2 
-                         focus:ring-flame-orange focus:border-transparent transition-all"
-                maxLength={50}
-                disabled={isSubmitting}
-              />
-            </div>
-
             {/* Code input */}
             <div>
-              <label htmlFor="code" className="block text-sm font-medium text-gray-300 mb-2">
-                Код доступа (4 цифры)
+              <label className="block text-sm font-medium text-text-muted mb-4 text-center">
+                Введите код (4 цифры)
               </label>
-              <input
-                type="text"
-                id="code"
-                value={code}
-                onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                placeholder="0000"
-                className="w-full px-4 py-3 bg-night-dark border border-night-light rounded-lg 
-                         text-white text-center text-2xl tracking-widest placeholder-gray-500 
-                         focus:outline-none focus:ring-2 focus:ring-flame-orange 
-                         focus:border-transparent transition-all font-mono"
-                maxLength={4}
-                inputMode="numeric"
-                pattern="\d{4}"
-                disabled={isSubmitting}
-              />
+              <div 
+                className="flex flex-row justify-center items-center gap-4 sm:gap-2"
+                onPaste={handlePaste}
+              >
+                {code.map((digit, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    inputMode="numeric"
+                    value={digit}
+                    onChange={(e) => handleInputChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    ref={(el) => {
+                      inputRefs.current[index] = el;
+                    }}
+                    className="w-16 h-16 sm:w-[60px] sm:h-[60px] 
+                             bg-bg-800 border-2 border-divider rounded-lg
+                             text-gold-300 text-center text-2xl sm:text-xl
+                             font-mono font-bold
+                             focus:outline-none focus:border-gold-500 
+                             transition-all
+                             disabled:opacity-50 disabled:cursor-not-allowed"
+                    maxLength={1}
+                    disabled={isSubmitting}
+                    aria-label={`Цифра ${index + 1} кода`}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Error message */}
@@ -124,7 +175,7 @@ function Enter() {
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-red-400 text-sm text-center"
+                className="text-danger text-sm text-center"
               >
                 {error}
               </motion.p>
@@ -133,12 +184,8 @@ function Enter() {
             {/* Submit button */}
             <motion.button
               type="submit"
-              disabled={isSubmitting || !name.trim() || code.length !== 4}
-              className="w-full py-4 bg-gradient-to-r from-flame-orange to-flame-red 
-                       text-white font-semibold rounded-lg shadow-lg
-                       hover:shadow-flame-orange/30 hover:shadow-xl
-                       disabled:opacity-50 disabled:cursor-not-allowed
-                       transition-all duration-300 transform hover:scale-[1.02]"
+              disabled={isSubmitting || codeString.length !== 4}
+              className="btn-primary w-full py-4"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -169,9 +216,9 @@ function Enter() {
           </div>
         </motion.form>
 
-        {/* Footer hint */}
-        <p className="text-center text-gray-500 text-sm mt-6">
-          Текущий код: <span className="text-gray-400">{state.code}</span>
+         {/*Footer hint*/}
+        <p className="text-center text-text-muted text-sm mt-6">
+          Текущий код: <span className="text-text-on-dark/70">{state.code}</span>
         </p>
       </motion.div>
     </div>

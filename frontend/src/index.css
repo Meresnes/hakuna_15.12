@@ -3,13 +3,34 @@
 @tailwind utilities;
 
 :root {
-  --flame-red: #ff4136;
-  --flame-yellow: #ffdc00;
-  --flame-white: #fffef0;
-  --flame-orange: #ff851b;
-  --night-dark: #0a0a0f;
-  --night-medium: #151520;
+  /* Background */
+  --bg-900: #0A0A0A;    /* основной чёрный бархат */
+  --bg-800: #121212;    /* поднятая карточка / модал */
+  
+  /* Gold gradations (для текстов, кнопок, glow) */
+  --gold-100: #FFF4D9;  /* светящийся ореол / подсветка */
+  --gold-300: #FFD86A;  /* светлый акцент / кнопки hover */
+  --gold-500: #D4AF37;  /* основной "металлик" (Primary Gold) */
+  --gold-700: #9A7427;  /* тёмный оттенок золота / тень */
+  
+  /* Sparkles / confetti */
+  --sparkle: #EEDFA4;   /* мелкие блёстки */
+  
+  /* Texts and auxiliary */
+  --text-on-dark: #FFF8EA;  /* основной текст на тёмном фоне (слегка тёплый) */
+  --text-muted: #BFAF8A;    /* вспомогательный / описание */
+  --divider: rgba(255,255,255,0.06);
+  --danger: #E05A3A;        /* редко, для ошибок */
+  --focus-ring: #FFD78A;    /* для outline при фокусе (в тему золота) */
+  
+  /* Legacy support (для постепенной миграции) */
+  --night-dark: var(--bg-900);
+  --night-medium: var(--bg-800);
   --night-light: #1f1f2e;
+  --gold-muted: var(--gold-500);
+  --gold-luminous: var(--gold-300);
+  --gold-dark: var(--gold-700);
+  --gold-accent: var(--gold-300);
 }
 
 * {
@@ -25,9 +46,9 @@ body {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--night-dark);
-  color: white;
+  font-family: 'Inter', 'Roboto', 'PT Sans', system-ui, sans-serif;
+  background-color: var(--bg-900);
+  color: var(--text-on-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -42,22 +63,84 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--night-medium);
+  background: var(--bg-800);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--night-light);
+  background: rgba(212, 175, 55, 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--flame-orange);
+  background: var(--gold-500);
+}
+
+/* ===========================================
+   Button Components
+   =========================================== */
+
+@layer components {
+  .btn-primary {
+    background: linear-gradient(180deg, var(--gold-500), var(--gold-700));
+    color: var(--bg-900);
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(150, 110, 30, 0.18);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, var(--gold-300), var(--gold-500));
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--gold-500);
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: 2px solid var(--gold-500);
+    transition: all 0.12s ease;
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--gold-300);
+    color: var(--bg-900);
+    border-color: var(--gold-300);
+  }
+
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 /* Utility classes */
 @layer utilities {
   .text-gradient-flame {
     background: linear-gradient(135deg, var(--flame-yellow), var(--flame-orange), var(--flame-red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, var(--gold-300), var(--gold-500), var(--gold-700));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -70,8 +153,35 @@ body {
       0 0 60px var(--flame-yellow);
   }
 
+  .glow-gold {
+    box-shadow: 
+      0 0 20px rgba(212, 175, 55, 0.3),
+      0 0 40px rgba(212, 175, 55, 0.2),
+      0 0 60px rgba(212, 175, 55, 0.1);
+  }
+
   .bg-gradient-radial {
-    background: radial-gradient(circle at center, var(--night-light), var(--night-dark));
+    background: radial-gradient(circle at center, var(--bg-800), var(--bg-900));
+  }
+
+  /* Sparkle patterns */
+  .sparkle-bg {
+    background-image: 
+      radial-gradient(circle at 20% 30%, var(--sparkle) 1px, transparent 1px),
+      radial-gradient(circle at 60% 70%, var(--sparkle) 1px, transparent 1px),
+      radial-gradient(circle at 80% 20%, var(--sparkle) 1px, transparent 1px),
+      radial-gradient(circle at 40% 90%, var(--sparkle) 1px, transparent 1px),
+      radial-gradient(circle at 10% 50%, var(--sparkle) 1px, transparent 1px);
+    background-size: 200px 200px, 150px 150px, 180px 180px, 160px 160px, 220px 220px;
+    background-position: 0 0, 50px 50px, 100px 100px, 150px 150px, 200px 200px;
+    opacity: 0.4;
+  }
+
+  .sparkle-accent {
+    background-image: 
+      radial-gradient(circle at 50% 50%, var(--sparkle) 2px, transparent 2px);
+    background-size: 30px 30px;
+    opacity: 0.6;
   }
 }
 
@@ -86,5 +196,189 @@ body {
 
 .font-inter {
   font-family: 'Inter', sans-serif;
+}
+
+/* ===========================================
+   Typography System
+   =========================================== */
+
+.h1 {
+  font-family: 'Cinzel', 'Playfair Display', 'PT Serif', serif;
+  font-size: 3.5rem; /* 56px */
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--gold-500);
+  text-shadow: 
+    0 0 10px rgba(212, 175, 55, 0.3),
+    0 0 20px rgba(212, 175, 55, 0.2),
+    0 6px 20px rgba(212, 175, 55, 0.14);
+}
+
+.h2 {
+  font-family: 'Cinzel', 'Playfair Display', 'PT Serif', serif;
+  font-size: 2.25rem; /* 36px */
+  font-weight: 600;
+  line-height: 1.05;
+  color: var(--text-on-dark);
+}
+
+.h3 {
+  font-family: 'Inter', 'Roboto', 'PT Sans', system-ui, sans-serif;
+  font-size: 1.5rem; /* 24px */
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-on-dark);
+}
+
+.h4 {
+  font-family: 'Inter', 'Roboto', 'PT Sans', system-ui, sans-serif;
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-on-dark);
+}
+
+.body {
+  font-family: 'Inter', 'Roboto', 'PT Sans', system-ui, sans-serif;
+  font-size: 1rem; /* 16px */
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-on-dark);
+}
+
+.caption {
+  font-family: 'Inter', 'Roboto', 'PT Sans', system-ui, sans-serif;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* Accessibility: Ensure small gold text has sufficient contrast */
+@media (prefers-contrast: high) {
+  .h1 {
+    color: var(--gold-300);
+  }
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ===========================================
+   Presenter Questions Page Styles
+   =========================================== */
+
+/* Fullscreen page background */
+.presenter-questions-page {
+  background: var(--bg-900);
+  min-height: 100vh;
+}
+
+/* Glassmorphism card */
+.questions-card {
+  background: rgba(18, 18, 18, 0.5);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--divider);
+}
+
+/* Title glow effect - gold */
+.questions-title-glow {
+  text-shadow: 
+    0 0 10px rgba(212, 175, 55, 0.4),
+    0 0 20px rgba(212, 175, 55, 0.3),
+    0 6px 20px rgba(212, 175, 55, 0.2);
+}
+
+/* Neumorphism styles - gold palette */
+.neumorphic-number {
+  background: rgba(212, 175, 55, 0.08);
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.5),
+    -4px -4px 8px rgba(212, 175, 55, 0.1);
+}
+
+.neumorphic-answer {
+  background: rgba(255, 216, 106, 0.15);
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.5),
+    -4px -4px 8px rgba(255, 216, 106, 0.2);
+}
+
+.neumorphic-answer-hidden {
+  background: rgba(212, 175, 55, 0.06);
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.5),
+    -4px -4px 8px rgba(212, 175, 55, 0.08);
+}
+
+.neumorphic-button {
+  background: rgba(212, 175, 55, 0.08);
+  box-shadow: 
+    3px 3px 6px rgba(0, 0, 0, 0.4),
+    -3px -3px 6px rgba(212, 175, 55, 0.1);
+  transition: all 0.2s ease;
+}
+
+.neumorphic-button:hover {
+  box-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.4),
+    -2px -2px 4px rgba(212, 175, 55, 0.15);
+}
+
+.neumorphic-button:active {
+  box-shadow: 
+    inset 2px 2px 4px rgba(0, 0, 0, 0.4),
+    inset -2px -2px 4px rgba(212, 175, 55, 0.1);
+}
+
+/* Answer reveal animation with neumorphism */
+.answer-glow {
+  animation: answerReveal 700ms ease-out forwards;
+}
+
+@keyframes answerReveal {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+    box-shadow: 
+      2px 2px 4px rgba(0, 0, 0, 0.3),
+      -2px -2px 4px rgba(255, 216, 106, 0.1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 
+      4px 4px 8px rgba(0, 0, 0, 0.5),
+      -4px -4px 8px rgba(255, 216, 106, 0.2);
+  }
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 

@@ -7,11 +7,35 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        'display': ['Cinzel', 'Playfair Display', 'PT Serif', 'serif'],
+        'script': ['Great Vibes', 'Dancing Script', 'cursive'],
+        'sans': ['Inter', 'Roboto', 'PT Sans', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        /* Legacy support */
         'cinzel': ['Cinzel', 'serif'],
         'great-vibes': ['Great Vibes', 'cursive'],
         'inter': ['Inter', 'sans-serif'],
       },
       colors: {
+        bg: {
+          900: '#0A0A0A',
+          800: '#121212',
+        },
+        gold: {
+          100: '#FFF4D9',
+          300: '#FFD86A',
+          500: '#D4AF37',
+          700: '#9A7427',
+          DEFAULT: '#D4AF37',
+        },
+        sparkle: '#EEDFA4',
+        text: {
+          'on-dark': '#FFF8EA',
+          'muted': '#BFAF8A',
+        },
+        divider: 'rgba(255,255,255,0.06)',
+        danger: '#E05A3A',
+        'focus-ring': '#FFD78A',
+        /* Legacy support */
         flame: {
           red: '#ff4136',
           yellow: '#ffdc00',
@@ -19,8 +43,8 @@ export default {
           orange: '#ff851b',
         },
         night: {
-          dark: '#0a0a0f',
-          medium: '#151520',
+          dark: '#0A0A0A',
+          medium: '#121212',
           light: '#1f1f2e',
         },
       },
