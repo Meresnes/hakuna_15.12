@@ -38,9 +38,9 @@ function PresenterQuestionsPage() {
   return (
     <div className="presenter-questions-page min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
       {/* Connection status indicator and controls (small, top-right) */}
-      <div className="fixed top-4 right-4 flex items-center gap-2 text-sm text-white/50">
+      <div className="fixed top-4 right-4 flex items-center gap-2 text-sm">
         <span
-          className={`w-2 h-2 rounded-full ${
+          className={`w-2.5 h-2.5 rounded-full ${
             isConnected ? 'bg-green-500' : 'bg-red-500'
           }`}
         />
@@ -48,8 +48,8 @@ function PresenterQuestionsPage() {
         {/* Toggle answers button */}
         <button
           onClick={handleToggleAnswers}
-          className="px-2 py-1 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 
-                   text-xs rounded border border-white/10 transition-all duration-200"
+          className="neumorphic-button px-3 py-1.5 text-gold-500 hover:text-gold-300 
+                   text-sm rounded-lg"
           // title={showAnswers ? 'Скрыть ответы' : 'Показать ответы'}
         >
           {showAnswers ? '✓' : '?'}
@@ -58,8 +58,8 @@ function PresenterQuestionsPage() {
         {/* Navigate to presenter button */}
         <button
           onClick={handleNavigateToPresenter}
-          className="px-2 py-1 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/70 
-                   text-xs rounded border border-white/10 transition-all duration-200"
+          className="neumorphic-button px-3 py-1.5 text-gold-500 hover:text-gold-300 
+                   text-sm rounded-lg"
           // title="Перейти на страницу Presenter"
         >
           →

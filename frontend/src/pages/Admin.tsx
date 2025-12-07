@@ -157,9 +157,9 @@ function Admin() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Пароль администратора"
-              className="w-full px-4 py-3 bg-night-dark border border-night-light rounded-lg 
-                       text-white placeholder-gray-500 focus:outline-none focus:ring-2 
-                       focus:ring-flame-orange"
+              className="w-full px-4 py-3 bg-bg-800 border border-divider rounded-lg 
+                       text-gold-300 placeholder-text-muted focus:outline-none focus:ring-2 
+                       focus:ring-focus-ring focus:border-gold-500"
             />
           </div>
 

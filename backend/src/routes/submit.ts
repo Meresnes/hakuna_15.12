@@ -30,7 +30,7 @@ router.post('/', async (req: Request, res: Response) => {
     if (code !== validCode) {
       res.status(401).json({
         success: false,
-        error: 'Неверный код доступа',
+        error: 'Неверный код',
       });
       return;
     }

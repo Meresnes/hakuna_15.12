@@ -12,7 +12,7 @@ import Admin from './pages/Admin';
 function App() {
   return (
     <AppProvider>
-      <div className="min-h-screen bg-night-dark text-white font-inter">
+      <div className="min-h-screen bg-bg-900 text-text-on-dark font-sans">
         <Routes>
           <Route path="/" element={<Enter />} />
           <Route path="/choose" element={<Choose />} />

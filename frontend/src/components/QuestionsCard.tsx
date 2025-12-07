@@ -18,22 +18,22 @@ export function QuestionsCard({ showAnswers }: QuestionsCardProps) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className="w-full max-w-5xl mx-auto"
+      className="w-full max-w-6xl mx-auto"
     >
-      {/* Card with semi-transparent background */}
-      <div className="questions-card rounded-2xl md:rounded-3xl p-6 md:p-10 lg:p-12">
+      {/* Glassmorphism card */}
+      <div className="questions-card rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10">
         {/* Header */}
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="font-cinzel text-2xl md:text-3xl lg:text-4xl font-bold text-gold text-center mb-8 md:mb-10 lg:mb-12"
+          className="h1 text-center mb-8 md:mb-10 lg:mb-12 questions-title-glow"
         >
           Вопросы
         </motion.h1>
 
         {/* Questions list */}
-        <div className="space-y-6 md:space-y-8 lg:space-y-10">
+        <div className="space-y-8 md:space-y-10 lg:space-y-12">
           {QUESTIONS.map((question, index) => (
             <QuestionItem
               key={question.id}

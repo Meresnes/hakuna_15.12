@@ -77,17 +77,17 @@ function Choose() {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <p className="font-great-vibes text-4xl text-flame-yellow opacity-90">
+          <p className="font-script text-4xl text-gold-300 opacity-90">
             Добавь света в мир
           </p>
-          <p className="text-gray-400">
+          <p className="text-text-muted">
             Введите своё имя и выберите доброе дело
           </p>
         </div>
 
         {/* Name input */}
         <div className="max-w-md mx-auto mb-8">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-text-muted mb-2">
             Ваше имя
           </label>
           <input
@@ -96,9 +96,9 @@ function Choose() {
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="Введите имя"
-            className="w-full px-4 py-3 bg-night-dark border border-night-light rounded-lg 
-                     text-white placeholder-gray-500 focus:outline-none focus:ring-2 
-                     focus:ring-flame-orange focus:border-transparent transition-all"
+            className="w-full px-4 py-3 bg-bg-800 border border-divider rounded-lg 
+                     text-gold-300 placeholder-text-muted focus:outline-none focus:ring-2 
+                     focus:ring-focus-ring focus:border-gold-500 transition-all"
             maxLength={50}
             disabled={isSubmitting}
           />
@@ -113,10 +113,10 @@ function Choose() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`relative p-6 rounded-2xl border-2 text-left transition-all duration-300
+              className={`relative p-6 rounded-2xl border-2 text-left transition-all duration-300 bg-bg-800/50
                 ${selectedChoice === choice.id
                   ? 'border-current shadow-lg scale-[1.02]'
-                  : 'border-night-light hover:border-current/50'
+                  : 'border-divider hover:border-current/50'
                 }
               `}
               style={{
@@ -154,7 +154,7 @@ function Choose() {
               </div>
 
               {/* Text */}
-              <p className="text-white text-sm md:text-base leading-relaxed">
+              <p className="text-text-on-dark text-sm md:text-base leading-relaxed">
                 {choice.text}
               </p>
 
@@ -166,7 +166,7 @@ function Choose() {
                   className="absolute top-4 right-4 w-6 h-6 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: choice.color }}
                 >
-                  <svg className="w-4 h-4 text-night-dark" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-bg-900" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -184,7 +184,7 @@ function Choose() {
           <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-red-400 text-sm text-center mb-4"
+            className="text-danger text-sm text-center mb-4"
           >
             {error}
           </motion.p>
@@ -194,11 +194,7 @@ function Choose() {
         <motion.button
           onClick={handleSubmit}
           disabled={!name.trim() || selectedChoice === null || isSubmitting}
-          className="w-full max-w-md mx-auto block py-4 bg-gradient-to-r from-flame-orange to-flame-red 
-                   text-white font-semibold rounded-lg shadow-lg
-                   hover:shadow-flame-orange/30 hover:shadow-xl
-                   disabled:opacity-50 disabled:cursor-not-allowed
-                   transition-all duration-300"
+          className="btn-primary w-full max-w-md mx-auto block py-4"
           whileHover={{ scale: name.trim() && selectedChoice ? 1.02 : 1 }}
           whileTap={{ scale: name.trim() && selectedChoice ? 0.98 : 1 }}
         >
@@ -219,7 +215,7 @@ function Choose() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-night-medium p-8 rounded-2xl text-center max-w-sm mx-4"
+              className="bg-bg-800 p-8 rounded-2xl text-center max-w-sm mx-4 border border-divider"
             >
               <div 
                 className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
@@ -247,10 +243,10 @@ function Choose() {
                       </g>
                   </svg>
               </div>
-              <h2 className="font-cinzel text-2xl font-bold text-white mb-2">
+              <h2 className="font-display text-2xl font-bold text-text-on-dark mb-2">
                 Спасибо!
               </h2>
-              <p className="text-gray-400">
+              <p className="text-text-muted">
                 Ваш свет добавлен в мир
               </p>
             </motion.div>
