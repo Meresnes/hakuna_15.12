@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { QUESTIONS } from '../constants/questions';
 import { QuestionItem } from './QuestionItem';
+import Logo from "@/components/Logo.tsx";
 
 interface QuestionsCardProps {
   /** Whether to show answers */
@@ -20,6 +21,8 @@ export function QuestionsCard({ showAnswers }: QuestionsCardProps) {
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className="w-full max-w-6xl mx-auto"
     >
+
+        <Logo className="mb-24 " delay={0.1} />
       {/* Glassmorphism card */}
       <div className="questions-card rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10">
         {/* Header */}

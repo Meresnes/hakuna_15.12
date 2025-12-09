@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {CHOICE_COLORS, CHOICE_TEXTS } from '../context/AppContext';
+import Logo from '../components/Logo';
 
 function Choose() {
   const navigate = useNavigate();
@@ -76,6 +77,7 @@ function Choose() {
       >
         {/* Header */}
         <div className="text-center mb-8">
+          <Logo className="mb-6" delay={0.1} />
           <p className="font-script text-4xl text-gold-300 opacity-90">
             Добавь света в мир
           </p>

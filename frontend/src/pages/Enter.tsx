@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
+import Logo from '../components/Logo';
 
 function Enter() {
   const navigate = useNavigate();
@@ -120,6 +121,7 @@ function Enter() {
       >
         {/* Header */}
         <div className="text-center mb-10">
+          <Logo className="mb-6" delay={0.2} />
           <h1 className="h1 text-center mb-3">Ханука 2025</h1>
           <p className="font-script text-2xl md:text-3xl text-black-300 opacity-90">
             Добавь света в мир

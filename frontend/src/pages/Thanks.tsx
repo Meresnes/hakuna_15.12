@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import Logo from '../components/Logo';
 
 function Thanks() {
 
@@ -12,7 +13,6 @@ function Thanks() {
       >
         {/* Animated flame */}
         <motion.div
-          className="w-32 h-32 mx-auto mb-8"
           animate={{
             scale: [1, 1.1, 1],
             opacity: [0.8, 1, 0.8],
@@ -23,27 +23,7 @@ function Thanks() {
             ease: 'easeInOut',
           }}
         >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32">
-                <defs>
-                    <radialGradient id="iconFlame" cx="35%" cy="70%" r="60%">
-                        <stop offset="0%" stop-color="#fffef0"/>
-                        <stop offset="40%" stop-color="#ffdc00"/>
-                        <stop offset="80%" stop-color="#ff851b"/>
-                        <stop offset="100%" stop-color="#ff4136"/>
-                    </radialGradient>
-                </defs>
-
-                <path d="M 12 28
-           C 8 26 6 22 6 18
-           C 6 14 8 10 10 6
-           C 11 4 12 2 12 2
-           C 12 2 13 4 14 6
-           C 16 10 18 14 18 18
-           C 18 22 16 26 12 28 Z"
-                      fill="url(#iconFlame)"/>
-
-                <ellipse cx="12" cy="14" rx="3" ry="8" fill="#fffef0" opacity="0.8"/>
-            </svg>
+            <Logo className="mb-8" delay={0.1} />
 
         </motion.div>
 
