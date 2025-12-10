@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 interface LogoProps {
   className?: string;
   delay?: number;
+  glowScale?: number;
 }
 
 type Sparkle = {
@@ -24,7 +25,7 @@ const SPARKLES: Sparkle[] = [
   { x: 12, y: 48, size: 8, delay: 5.4, duration: 9.6 },
 ];
 
-function Logo({ className = '', delay = 0 }: LogoProps) {
+function Logo({ className = '', delay = 0, glowScale = 1 }: LogoProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -34,7 +35,11 @@ function Logo({ className = '', delay = 0 }: LogoProps) {
       style={{ overflow: 'visible' }}
     >
       <div className="relative inline-flex items-center justify-center overflow-visible">
-        <div className="logo-glow" aria-hidden>
+        <div
+          className="logo-glow"
+          aria-hidden
+          style={{ transform: `scale(${glowScale})` }}
+        >
           <motion.div
             className="logo-glow__halo logo-glow__halo--outer"
             animate={{

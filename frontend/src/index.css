@@ -462,8 +462,20 @@ select:focus-visible {
 .questions-card {
   background: rgba(18, 18, 18, 0.5);
   backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 28px rgba(212, 175, 55, 0.16),
+    0 0 46px rgba(212, 175, 55, 0.12);
   border: 1px solid var(--divider);
+  position: relative;
+  overflow: hidden;
+  max-height: calc(100vh - 140px);
+}
+
+.questions-card__scroll {
+  max-height: inherit;
+  overflow-y: auto;
+  padding: inherit;
 }
 
 /* Title glow effect - gold */

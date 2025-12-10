@@ -36,9 +36,9 @@ function PresenterQuestionsPage() {
   };
 
   return (
-    <div className="presenter-questions-page min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
+    <div className="presenter-questions-page min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-6 lg:p-8">
       {/* Connection status indicator and controls (small, top-right) */}
-      <div className="fixed top-4 right-4 flex items-center gap-2 text-sm">
+      <div className="fixed top-5 right-5 flex items-center gap-2.5 text-sm px-2 py-1.5 rounded-lg backdrop-blur-sm bg-black/20 border border-white/5 shadow-lg">
         <span
           className={`w-2.5 h-2.5 rounded-full ${
             isConnected ? 'bg-green-500' : 'bg-red-500'
