@@ -8,6 +8,7 @@ import Thanks from './pages/Thanks';
 import Presenter from './pages/Presenter';
 import PresenterQuestionsPage from './pages/PresenterQuestionsPage';
 import Admin from './pages/Admin';
+import Introduce from './pages/Introduce';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/choose" element={<Choose />} />
           <Route path="/thanks" element={<Thanks />} />
           <Route path="/presenter" element={<Presenter />} />
+          <Route path="/introduce" element={<Introduce />} />
           <Route path="/presenter/questions" element={<PresenterQuestionsPage />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
