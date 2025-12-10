@@ -122,7 +122,6 @@ function Enter() {
         {/* Header */}
         <div className="text-center mb-10">
           <Logo className="mb-6" delay={0.2} />
-          <h1 className="h1 text-center mb-3">Ханука 2025</h1>
           <p className="font-script text-2xl md:text-3xl text-black-300 opacity-90">
             Добавь света в мир
           </p>
@@ -217,11 +216,6 @@ function Enter() {
             </motion.button>
           </div>
         </motion.form>
-
-         {/*Footer hint*/}
-        <p className="text-center text-text-muted text-sm mt-6">
-          Текущий код: <span className="text-text-on-dark/70">{state.code}</span>
-        </p>
       </motion.div>
     </div>
   );
