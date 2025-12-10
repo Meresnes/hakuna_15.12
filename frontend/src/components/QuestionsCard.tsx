@@ -46,7 +46,6 @@ export function QuestionsCard({ showAnswers }: QuestionsCardProps) {
               answer={question.answer}
               showAnswer={showAnswers}
               delay={index * staggerDelay}
-              className="text-base md:text-[1.05rem] leading-[1.45]"
             />
           ))}
         </div>
