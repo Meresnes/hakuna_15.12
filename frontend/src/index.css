@@ -57,6 +57,178 @@ body {
   min-height: 100%;
 }
 
+/* ===========================================
+   Logo glow + sunburst (gold palette)
+   =========================================== */
+.logo-glow {
+  position: absolute;
+  inset: -30%;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  filter:
+    drop-shadow(0 0 18px rgba(212, 175, 55, 0.32))
+    drop-shadow(0 0 38px rgba(212, 175, 55, 0.22))
+    drop-shadow(0 0 54px rgba(212, 175, 55, 0.12));
+}
+
+.logo-glow__halo {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 244, 217, 0.78) 0%,
+    rgba(255, 216, 106, 0.26) 40%,
+    rgba(10, 10, 10, 0) 70%
+  );
+  filter: blur(16px);
+  will-change: opacity, transform;
+}
+
+.logo-glow__halo--outer {
+  width: 180%;
+  height: 180%;
+  opacity: 0.7;
+}
+
+.logo-glow__halo--inner {
+  width: 125%;
+  height: 125%;
+  opacity: 0.95;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 244, 217, 0.9) 0%,
+    rgba(212, 175, 55, 0.38) 44%,
+    rgba(212, 175, 55, 0) 68%
+  );
+  filter: blur(10px);
+}
+
+.logo-sunburst {
+  position: absolute;
+  inset: -26%;
+  mix-blend-mode: screen;
+  filter: blur(1px);
+  will-change: transform, opacity;
+}
+
+.logo-sunburst__ray {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 18px;
+  height: 52%;
+  transform-origin: 50% 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 244, 217, 0.95) 0%,
+    rgba(255, 216, 106, 0.35) 60%,
+    rgba(212, 175, 55, 0) 100%
+  );
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  opacity: 0.85;
+}
+
+.logo-sunburst__ray:nth-child(2n) {
+  height: 58%;
+  opacity: 0.62;
+}
+
+.logo-sunburst__ray:nth-child(3n) {
+  height: 60%;
+  opacity: 0.52;
+  filter: blur(1.2px);
+}
+
+.logo-sparkles {
+  position: absolute;
+  inset: -24%;
+  pointer-events: none;
+}
+
+.logo-sparkle {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 40% 40%,
+    rgba(255, 244, 217, 1) 0%,
+    rgba(255, 216, 106, 0.85) 45%,
+    rgba(212, 175, 55, 0) 70%
+  );
+  filter: drop-shadow(0 0 6px rgba(255, 244, 217, 0.7));
+  opacity: 0;
+  animation-name: sparkleTwinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: var(--sparkle-duration, 8s);
+  animation-delay: var(--sparkle-delay, 0s);
+}
+
+@keyframes sparkleTwinkle {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.6);
+  }
+  18% {
+    opacity: 0.95;
+    transform: translate3d(0, -4px, 0) scale(1);
+  }
+  45% {
+    opacity: 0.35;
+    transform: translate3d(0, -12px, 0) scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0) scale(0.8);
+  }
+}
+
+/* Responsive tuning */
+@media (max-width: 768px) {
+  .logo-glow {
+    inset: -22%;
+  }
+
+  .logo-glow__halo--outer {
+    width: 150%;
+    height: 150%;
+    opacity: 0.62;
+  }
+
+  .logo-glow__halo--inner {
+    width: 115%;
+    height: 115%;
+    opacity: 0.9;
+  }
+
+  .logo-sunburst {
+    inset: -18%;
+    filter: blur(1.2px);
+  }
+
+  .logo-sunburst__ray {
+    width: 14px;
+    height: 44%;
+  }
+
+  .logo-sunburst__ray:nth-child(2n) {
+    height: 48%;
+  }
+
+  .logo-sunburst__ray:nth-child(3n) {
+    height: 50%;
+  }
+
+  .logo-sparkles {
+    inset: -18%;
+  }
+
+  .logo-sparkle {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 5px rgba(255, 244, 217, 0.6));
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
